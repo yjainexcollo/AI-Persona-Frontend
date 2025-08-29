@@ -28,16 +28,15 @@ const EmailVerificationPage: React.FC = () => {
           }, 2000);
           return;
         }
-        const BACKEND_URL = env.BACKEND_URL;
-        const response = await fetch(
-          `${BACKEND_URL}/api/auth/verify-email?token=${token}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+         const response = await fetch(
+           `https://ai-persona-frontend-ashy.vercel.app/api/auth/verify-email?token=${token}`,
+           {
+             method: "GET",
+             headers: {
+               "Content-Type": "application/json",
+             },
+           }
+         );
         const data = await response.json();
         if (response.ok) {
           navigate("/email-verification-success");
