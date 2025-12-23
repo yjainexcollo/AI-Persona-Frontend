@@ -13,7 +13,10 @@ import {
   Drawer,
   CircularProgress,
   Alert,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from "recharts";
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
@@ -32,6 +35,9 @@ import { logout } from "../services/authService";
 const COLORS = ["#2950DA", "#526794", "#E8ECF2", "#526794"];
 
 const DashboardPage: React.FC = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
   const [stats, setStats] = useState<{
     activePersonas?: number;
     inactivePersonas?: number;
@@ -221,7 +227,7 @@ const DashboardPage: React.FC = () => {
       <Drawer
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-        PaperProps={{ sx: { width: 240 } }}
+        PaperProps={{ sx: { width: { xs: '86vw', sm: 280 } } }}
       >
         <AdminSidebar
           userRole={user.role}
@@ -239,68 +245,129 @@ const DashboardPage: React.FC = () => {
           ml: { xs: 0, md: "220px" },
           minWidth: 0,
           overflow: "hidden",
+          width: { xs: '100%', md: 'auto' },
+          maxWidth: '100vw',
         }}
       >
+        {/* Mobile Header with Hamburger */}
+        {isMobile && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              p: 2,
+              borderBottom: '1px solid #e0e0e0',
+              bgcolor: '#fff',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <IconButton
+                onClick={() => setSidebarOpen(true)}
+                sx={{ mr: 2, minWidth: 44, minHeight: 44 }}
+                aria-label="Open menu"
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                Dashboard
+              </Typography>
+            </Box>
+            <IconButton
+              sx={{ bgcolor: "#fff", border: "1px solid #e0e0e0", minWidth: 44, minHeight: 44 }}
+              onClick={() => setNotifOpen((v) => !v)}
+            >
+              <NotificationsNoneOutlinedIcon sx={{ color: "#2950DA" }} />
+            </IconButton>
+          </Box>
+        )}
+
         {/* Content */}
         <Box
           sx={{
             flex: 1,
-            px: spacing.pagePx,
-            py: spacing.pagePy,
+            px: { xs: 2, sm: 3, md: spacing.pagePx },
+            py: { xs: 2, sm: 3, md: spacing.pagePy },
             minWidth: 0,
             overflow: "auto",
           }}
         >
-          {/* Header */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              mb: 2,
-            }}
-          >
-            <Box>
-              <Typography
-                variant="h4"
-                sx={{
-                  fontWeight: typography.title.weight,
-                  color: colors.textPrimary,
-                  fontSize: {
-                    xs: typography.title.xs,
-                    md: typography.title.md,
-                  },
-                }}
-              >
-                Dashboard
-              </Typography>
+          {/* Header - Desktop only */}
+          {!isMobile && (
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 2,
+              }}
+            >
+              <Box>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontWeight: typography.title.weight,
+                    color: colors.textPrimary,
+                    fontSize: {
+                      xs: typography.title.xs,
+                      md: typography.title.md,
+                    },
+                  }}
+                >
+                  Dashboard
+                </Typography>
+              </Box>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Button
+                  variant="contained"
+                  sx={{
+                    bgcolor: colors.primary,
+                    color: "#fff",
+                    fontWeight: 700,
+                    borderRadius: 2,
+                    px: 3,
+                    py: 1,
+                    fontSize: 16,
+                    textTransform: "none",
+                    "&:hover": { bgcolor: "#526794" },
+                  }}
+                  onClick={() => navigate("/discovery")}
+                >
+                  View Personas
+                </Button>
+                <IconButton
+                  sx={{ bgcolor: "#fff", border: "1px solid #e0e0e0", minWidth: 44, minHeight: 44 }}
+                  onClick={() => setNotifOpen((v) => !v)}
+                >
+                  <NotificationsNoneOutlinedIcon sx={{ color: "#2950DA" }} />
+                </IconButton>
+              </Box>
             </Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          )}
+
+          {/* Mobile View Personas Button */}
+          {isMobile && (
+            <Box sx={{ mb: 2 }}>
               <Button
                 variant="contained"
+                fullWidth
                 sx={{
                   bgcolor: colors.primary,
                   color: "#fff",
                   fontWeight: 700,
                   borderRadius: 2,
-                  px: 3,
-                  py: 1,
+                  py: 1.5,
                   fontSize: 16,
                   textTransform: "none",
+                  minHeight: 44,
                   "&:hover": { bgcolor: "#526794" },
                 }}
                 onClick={() => navigate("/discovery")}
               >
                 View Personas
               </Button>
-              <IconButton
-                sx={{ bgcolor: "#fff", border: "1px solid #e0e0e0" }}
-                onClick={() => setNotifOpen((v) => !v)}
-              >
-                <NotificationsNoneOutlinedIcon sx={{ color: "#2950DA" }} />
-              </IconButton>
             </Box>
-          </Box>
+          )}
           {/* Analytics and Highlights */}
           <Box
             sx={{
@@ -396,7 +463,7 @@ const DashboardPage: React.FC = () => {
                   </Typography>
                 </Box>
               </Box>
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, justifyContent: { xs: 'center', sm: 'flex-start' } }}>
                 {highlights.map((h) => (
                   <Box
                     key={h.label}
@@ -404,12 +471,14 @@ const DashboardPage: React.FC = () => {
                       bgcolor: "#2950DA",
                       color: "#fff",
                       borderRadius: 2,
-                      px: 4,
-                      py: 2,
-                      minWidth: 120,
+                      px: { xs: 3, sm: 4 },
+                      py: { xs: 1.5, sm: 2 },
+                      flex: { xs: '1 1 calc(50% - 8px)', sm: '0 1 auto' },
+                      minWidth: { xs: 0, sm: 120 },
+                      maxWidth: { xs: 'calc(50% - 8px)', sm: 'none' },
                       textAlign: "center",
                       fontWeight: 700,
-                      fontSize: 22,
+                      fontSize: { xs: 18, sm: 22 },
                       display: "flex",
                       flexDirection: "column",
                       alignItems: "center",
@@ -417,7 +486,7 @@ const DashboardPage: React.FC = () => {
                   >
                     <Typography
                       sx={{
-                        fontSize: 15,
+                        fontSize: { xs: 13, sm: 15 },
                         fontWeight: 600,
                         color: "#E8ECF2",
                         mb: 0.5,
@@ -598,11 +667,12 @@ const DashboardPage: React.FC = () => {
         onClose={() => setNotifOpen(false)}
         PaperProps={{
           sx: {
-            width: 340,
+            width: { xs: '90vw', sm: 340 },
+            maxWidth: '100vw',
             bgcolor: "#fff",
             borderLeft: "1px solid #f0f0f0",
-            px: 3,
-            py: 4,
+            px: { xs: 2, sm: 3 },
+            py: { xs: 3, sm: 4 },
             display: "flex",
             flexDirection: "column",
             minHeight: "100vh",

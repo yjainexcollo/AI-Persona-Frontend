@@ -37,7 +37,10 @@ import {
   Checkbox,
   Tooltip,
   Pagination,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
@@ -59,6 +62,9 @@ import {
 } from "../services/workspaceService";
 
 const AdminListPage: React.FC = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
   const [search, setSearch] = useState("");
   const [checked, setChecked] = useState<number[]>([]);
   const [page, setPage] = useState(1);
@@ -186,7 +192,7 @@ const AdminListPage: React.FC = () => {
       <Drawer
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-        PaperProps={{ sx: { width: 240 } }}
+        PaperProps={{ sx: { width: { xs: '86vw', sm: 280 } } }}
       >
         <AdminSidebar
           userRole={
@@ -204,253 +210,316 @@ const AdminListPage: React.FC = () => {
           flexDirection: "column",
           ml: { xs: 0, md: "220px" },
           minWidth: 0,
-          px: spacing.pagePx,
-          py: spacing.pagePy,
+          width: { xs: '100%', md: 'auto' },
+          maxWidth: '100vw',
+          overflow: 'hidden',
         }}
       >
-        {/* Header (match ActiveUsersPage / Dashboard look) */}
+        {/* Mobile Header with Hamburger */}
+        {isMobile && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              p: 2,
+              borderBottom: '1px solid #e0e0e0',
+              bgcolor: '#fff',
+            }}
+          >
+            <IconButton
+              onClick={() => setSidebarOpen(true)}
+              sx={{ mr: 2, minWidth: 44, minHeight: 44 }}
+              aria-label="Open menu"
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              Admin Users
+            </Typography>
+          </Box>
+        )}
+
+        {/* Content */}
         <Box
           sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 2,
-            pt: { xs: 2, md: 3 },
-            fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+            flex: 1,
+            px: { xs: 2, sm: 3, md: spacing.pagePx },
+            py: { xs: 2, sm: 3, md: spacing.pagePy },
+            minWidth: 0,
+            overflow: 'auto',
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}>
-            <Box>
-              <Typography
-                sx={{
-                  fontWeight: typography.title.weight,
-                  fontSize: {
-                    xs: typography.title.xs,
-                    md: typography.title.md,
-                  },
-                  color: colors.textPrimary,
-                }}
-              >
-                Admin Users
-              </Typography>
-              <Box
-                sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5 }}
-              >
-                <Box
-                  sx={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: "50%",
-                    bgcolor: colors.primary,
-                    opacity: 0.7,
-                  }}
-                />
-                <Typography
-                  sx={{
-                    color: colors.textSecondary,
-                    fontSize: typography.caption.size,
-                  }}
-                >
-                  {totalAdmins} admins
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-          <TextField
-            placeholder="Search admin users..."
-            size="small"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: "#bdbdbd" }} />
-                </InputAdornment>
-              ),
-              sx: {
-                borderRadius: 3,
-                bgcolor: "#fff",
-                width: { xs: 220, sm: 320 },
-                fontSize: 16,
-              },
-            }}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </Box>
-
-        {/* Users Table */}
-        <Paper elevation={0} sx={{ borderRadius: 3, p: { xs: 2, md: 3 } }}>
-          <TableContainer sx={{ width: "100%", overflowX: "auto" }}>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell padding="checkbox"></TableCell>
-                  <TableCell
-                    sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
-                  >
-                    User ID
-                  </TableCell>
-                  <TableCell
-                    sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
-                  >
-                    User Name
-                  </TableCell>
-                  <TableCell
-                    sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
-                  >
-                    User Type
-                  </TableCell>
-                  <TableCell
-                    sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
-                  >
-                    Status
-                  </TableCell>
-                  <TableCell align="right"></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={6} sx={{ textAlign: "center", py: 4 }}>
-                      <Typography>Loading admin users...</Typography>
-                    </TableCell>
-                  </TableRow>
-                ) : error ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={6}
-                      sx={{ textAlign: "center", py: 4, color: "error.main" }}
-                    >
-                      <Typography>{error}</Typography>
-                    </TableCell>
-                  </TableRow>
-                ) : paginatedUsers.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} sx={{ textAlign: "center", py: 4 }}>
-                      <Typography>No admin users found</Typography>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  paginatedUsers.map((user, index) => (
-                    <TableRow key={user.id}>
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={checked.includes(index)}
-                          onChange={() => handleCheck(index)}
-                          icon={<CheckBoxOutlineBlankIcon />}
-                          checkedIcon={
-                            <CheckBoxIcon sx={{ color: "#2950DA" }} />
-                          }
-                        />
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          fontWeight: 700,
-                          fontSize: { xs: 12, md: 16 },
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {user.id}
-                      </TableCell>
-                      <TableCell
-                        sx={{ fontWeight: 600, fontSize: { xs: 14, md: 16 } }}
-                      >
-                        {user.name}
-                      </TableCell>
-                      <TableCell
-                        sx={{ fontWeight: 600, fontSize: { xs: 14, md: 16 } }}
-                      >
-                        {user.role}
-                      </TableCell>
-                      <TableCell
-                        sx={{ fontWeight: 600, fontSize: { xs: 14, md: 16 } }}
-                      >
-                        {user.status === "ACTIVE" ? "Active" : "Inactive"}
-                      </TableCell>
-                      <TableCell align="right">
-                        <IconButton onClick={() => handleViewDetails(user.id)}>
-                          <MoreVertIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          {totalAdmins > itemsPerPage && (
+          {/* Header - Desktop only */}
+          {!isMobile && (
             <Box
               sx={{
                 display: "flex",
-                justifyContent: "center",
+                justifyContent: "space-between",
                 alignItems: "center",
-                mt: 3,
+                mb: 2,
+                pt: { xs: 2, md: 3 },
+                fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
               }}
             >
-              <Pagination
-                count={Math.ceil((totalAdmins || 0) / itemsPerPage)}
-                page={page}
-                onChange={(_, v) => setPage(v)}
-                color="primary"
-                shape="rounded"
-                size="large"
+              <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}>
+                <Box>
+                  <Typography
+                    sx={{
+                      fontWeight: typography.title.weight,
+                      fontSize: {
+                        xs: typography.title.xs,
+                        md: typography.title.md,
+                      },
+                      color: colors.textPrimary,
+                    }}
+                  >
+                    Admin Users
+                  </Typography>
+                  <Box
+                    sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5 }}
+                  >
+                    <Box
+                      sx={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        bgcolor: colors.primary,
+                        opacity: 0.7,
+                      }}
+                    />
+                    <Typography
+                      sx={{
+                        color: colors.textSecondary,
+                        fontSize: typography.caption.size,
+                      }}
+                    >
+                      {totalAdmins} admins
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+              <TextField
+                placeholder="Search admin users..."
+                size="small"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ color: "#bdbdbd" }} />
+                    </InputAdornment>
+                  ),
+                  sx: {
+                    borderRadius: 3,
+                    bgcolor: "#fff",
+                    width: { xs: 220, sm: 320 },
+                    fontSize: 16,
+                  },
+                }}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
             </Box>
           )}
-        </Paper>
-      </Box>
 
-      {/* User Details Modal */}
-      <Dialog
-        open={detailsOpen}
-        onClose={handleCloseDetails}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>User Details</DialogTitle>
-        <DialogContent>
-          {userDetails ? (
-            <Box>
-              <Typography>
-                <b>ID:</b> {userDetails.id}
-              </Typography>
-              <Typography>
-                <b>Name:</b> {userDetails.name}
-              </Typography>
-              <Typography>
-                <b>Email:</b> {userDetails.email}
-              </Typography>
-              <Typography>
-                <b>User Type:</b> {userDetails.role}
-              </Typography>
-              <Typography>
-                <b>Active:</b> {userDetails.status === "ACTIVE" ? "Yes" : "No"}
-              </Typography>
+          {/* Mobile Search */}
+          {isMobile && (
+            <Box sx={{ mb: 2 }}>
+              <TextField
+                placeholder="Search admin users..."
+                size="small"
+                fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ color: "#bdbdbd" }} />
+                    </InputAdornment>
+                  ),
+                  sx: {
+                    borderRadius: 3,
+                    bgcolor: "#fff",
+                    fontSize: 16,
+                  },
+                }}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
             </Box>
-          ) : null}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDetails}>Close</Button>
-          {userDetails && (
-            <>
-              {userDetails.status === "ACTIVE" ? (
-                <Button
-                  onClick={() => handleDeactivateUser(userDetails.id)}
-                  color="warning"
-                >
-                  Deactivate
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => handleActivateUser(userDetails.id)}
-                  color="success"
-                >
-                  Activate
-                </Button>
-              )}
-            </>
           )}
-        </DialogActions>
-      </Dialog>
+
+          {/* Users Table */}
+          <Paper elevation={0} sx={{ borderRadius: 3, p: { xs: 2, md: 3 } }}>
+            <TableContainer sx={{ width: "100%", overflowX: "auto" }}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell padding="checkbox"></TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
+                    >
+                      User ID
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
+                    >
+                      User Name
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
+                    >
+                      User Type
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
+                    >
+                      Status
+                    </TableCell>
+                    <TableCell align="right"></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {loading ? (
+                    <TableRow>
+                      <TableCell colSpan={6} sx={{ textAlign: "center", py: 4 }}>
+                        <Typography>Loading admin users...</Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : error ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={6}
+                        sx={{ textAlign: "center", py: 4, color: "error.main" }}
+                      >
+                        <Typography>{error}</Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : paginatedUsers.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} sx={{ textAlign: "center", py: 4 }}>
+                        <Typography>No admin users found</Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    paginatedUsers.map((user, index) => (
+                      <TableRow key={user.id}>
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={checked.includes(index)}
+                            onChange={() => handleCheck(index)}
+                            icon={<CheckBoxOutlineBlankIcon />}
+                            checkedIcon={
+                              <CheckBoxIcon sx={{ color: "#2950DA" }} />
+                            }
+                          />
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            fontWeight: 700,
+                            fontSize: { xs: 12, md: 16 },
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {user.id}
+                        </TableCell>
+                        <TableCell
+                          sx={{ fontWeight: 600, fontSize: { xs: 14, md: 16 } }}
+                        >
+                          {user.name}
+                        </TableCell>
+                        <TableCell
+                          sx={{ fontWeight: 600, fontSize: { xs: 14, md: 16 } }}
+                        >
+                          {user.role}
+                        </TableCell>
+                        <TableCell
+                          sx={{ fontWeight: 600, fontSize: { xs: 14, md: 16 } }}
+                        >
+                          {user.status === "ACTIVE" ? "Active" : "Inactive"}
+                        </TableCell>
+                        <TableCell align="right">
+                          <IconButton onClick={() => handleViewDetails(user.id)}>
+                            <MoreVertIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            {totalAdmins > itemsPerPage && (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  mt: 3,
+                }}
+              >
+                <Pagination
+                  count={Math.ceil((totalAdmins || 0) / itemsPerPage)}
+                  page={page}
+                  onChange={(_, v) => setPage(v)}
+                  color="primary"
+                  shape="rounded"
+                  size="large"
+                />
+              </Box>
+            )}
+          </Paper>
+        </Box>
+
+        {/* User Details Modal */}
+        <Dialog
+          open={detailsOpen}
+          onClose={handleCloseDetails}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>User Details</DialogTitle>
+          <DialogContent>
+            {userDetails ? (
+              <Box>
+                <Typography>
+                  <b>ID:</b> {userDetails.id}
+                </Typography>
+                <Typography>
+                  <b>Name:</b> {userDetails.name}
+                </Typography>
+                <Typography>
+                  <b>Email:</b> {userDetails.email}
+                </Typography>
+                <Typography>
+                  <b>User Type:</b> {userDetails.role}
+                </Typography>
+                <Typography>
+                  <b>Active:</b> {userDetails.status === "ACTIVE" ? "Yes" : "No"}
+                </Typography>
+              </Box>
+            ) : null}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDetails}>Close</Button>
+            {userDetails && (
+              <>
+                {userDetails.status === "ACTIVE" ? (
+                  <Button
+                    onClick={() => handleDeactivateUser(userDetails.id)}
+                    color="warning"
+                  >
+                    Deactivate
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => handleActivateUser(userDetails.id)}
+                    color="success"
+                  >
+                    Activate
+                  </Button>
+                )}
+              </>
+            )}
+          </DialogActions>
+        </Dialog>
+      </Box>
     </Box>
   );
 };

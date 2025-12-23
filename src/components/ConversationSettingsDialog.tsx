@@ -10,6 +10,8 @@ import {
   Divider,
   IconButton,
   Chip,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -95,6 +97,8 @@ const ConversationSettingsDialog: React.FC<ConversationSettingsDialogProps> = ({
   }
 
   const isArchived = !!localConversation.archivedAt;
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <Dialog
@@ -102,6 +106,7 @@ const ConversationSettingsDialog: React.FC<ConversationSettingsDialogProps> = ({
       onClose={onClose}
       aria-labelledby="conversation-settings-title"
       aria-describedby="conversation-settings-description"
+      fullScreen={isMobile}
       maxWidth="sm"
       fullWidth
       PaperProps={{

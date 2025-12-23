@@ -13,9 +13,54 @@ const FormattedOutput: React.FC<FormattedOutputProps> = ({ content }) => {
   // Split content into lines and process each line
   const lines = content.split("\n");
   const elements: React.ReactNode[] = [];
+  let currentCodeBlock: string[] = [];
+  let isInCodeBlock = false;
 
   lines.forEach((line, index) => {
     const trimmedLine = line.trim();
+
+    // Check for code block markers (```)
+    if (trimmedLine.startsWith("```")) {
+      if (isInCodeBlock) {
+        // End of code block
+        elements.push(
+          <Box
+            key={`code-${index}`}
+            component="pre"
+            sx={{
+              bgcolor: "#f5f5f5",
+              borderRadius: 1,
+              p: isMobile ? 1.5 : 2,
+              mb: isMobile ? 1 : 1.5,
+              overflow: "auto",
+              maxWidth: "100%",
+              fontSize: isMobile ? "13px" : "14px",
+              fontFamily: "monospace",
+              border: "1px solid #e0e0e0",
+              // Horizontal scroll inside block only
+              overflowX: "auto",
+              overflowY: "hidden",
+              whiteSpace: "pre",
+              wordWrap: "normal",
+            }}
+          >
+            <code>{currentCodeBlock.join("\n")}</code>
+          </Box>
+        );
+        currentCodeBlock = [];
+        isInCodeBlock = false;
+      } else {
+        // Start of code block
+        isInCodeBlock = true;
+      }
+      return;
+    }
+
+    // If inside code block, collect lines
+    if (isInCodeBlock) {
+      currentCodeBlock.push(line); // Keep original indentation
+      return;
+    }
 
     if (!trimmedLine) {
       // Empty line - add small spacing
@@ -55,6 +100,8 @@ const FormattedOutput: React.FC<FormattedOutputProps> = ({ content }) => {
               lineHeight: 1.5,
               color: "inherit",
               fontSize: isMobile ? "14px" : "16px",
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
             }}
           >
             {text}
@@ -96,6 +143,8 @@ const FormattedOutput: React.FC<FormattedOutputProps> = ({ content }) => {
               lineHeight: 1.5,
               color: "inherit",
               fontSize: isMobile ? "14px" : "16px",
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
             }}
           >
             {text}
@@ -116,12 +165,12 @@ const FormattedOutput: React.FC<FormattedOutputProps> = ({ content }) => {
             ? 18
             : 20
           : level === 2
-          ? isMobile
-            ? 16
-            : 18
-          : isMobile
-          ? 14
-          : 16;
+            ? isMobile
+              ? 16
+              : 18
+            : isMobile
+              ? 14
+              : 16;
       const fontWeight = level === 1 ? 700 : level === 2 ? 600 : 500;
 
       elements.push(
@@ -133,6 +182,8 @@ const FormattedOutput: React.FC<FormattedOutputProps> = ({ content }) => {
             mb: isMobile ? 0.5 : 1,
             mt: index > 0 ? (isMobile ? 1.5 : 2) : 0,
             color: "inherit",
+            wordBreak: "break-word",
+            overflowWrap: "break-word",
           }}
         >
           {text}
@@ -150,6 +201,8 @@ const FormattedOutput: React.FC<FormattedOutputProps> = ({ content }) => {
           lineHeight: 1.5,
           color: "inherit",
           fontSize: isMobile ? "14px" : "16px",
+          wordBreak: "break-word",
+          overflowWrap: "break-word",
         }}
       >
         {trimmedLine}
@@ -157,7 +210,7 @@ const FormattedOutput: React.FC<FormattedOutputProps> = ({ content }) => {
     );
   });
 
-  return <Box>{elements}</Box>;
+  return <Box sx={{ maxWidth: "100%", overflow: "hidden" }}>{elements}</Box>;
 };
 
 export default FormattedOutput;

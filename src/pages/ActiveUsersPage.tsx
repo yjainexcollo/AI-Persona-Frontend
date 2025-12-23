@@ -37,7 +37,10 @@ import {
   Checkbox,
   Tooltip,
   Pagination,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
@@ -62,6 +65,9 @@ import {
 } from "../services/workspaceService";
 
 const ActiveUsersPage: React.FC = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
   const [search, setSearch] = useState("");
   const [checked, setChecked] = useState<number[]>([]);
   const [page, setPage] = useState(1);
@@ -574,7 +580,7 @@ const ActiveUsersPage: React.FC = () => {
       <Drawer
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-        PaperProps={{ sx: { width: 240 } }}
+        PaperProps={{ sx: { width: { xs: '86vw', sm: 280 } } }}
       >
         <AdminSidebar
           userRole={user.role}
@@ -591,597 +597,633 @@ const ActiveUsersPage: React.FC = () => {
           flexDirection: "column",
           ml: { xs: 0, md: "220px" },
           minWidth: 0,
-          px: spacing.pagePx,
-          py: spacing.pagePy,
+          width: { xs: '100%', md: 'auto' },
+          maxWidth: '100vw',
+          overflow: 'hidden',
         }}
       >
-        {/* Header (matches Dashboard) */}
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            mb: 2,
-            pt: { xs: 2, md: 3 },
-            fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-          }}
-        >
-          <Box>
-            <Typography
-              sx={{
-                fontWeight: typography.title.weight,
-                fontSize: { xs: typography.title.xs, md: typography.title.md },
-                color: colors.textPrimary,
-              }}
+        {/* Mobile Header with Hamburger */}
+        {isMobile && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              p: 2,
+              borderBottom: '1px solid #e0e0e0',
+              bgcolor: '#fff',
+            }}
+          >
+            <IconButton
+              onClick={() => setSidebarOpen(true)}
+              sx={{ mr: 2, minWidth: 44, minHeight: 44 }}
+              aria-label="Open menu"
             >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
               Workspace Members
             </Typography>
-            <Box
-              sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5 }}
-            >
-              <Box
-                sx={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  bgcolor: colors.primary,
-                  opacity: 0.7,
-                }}
-              />
-              <Typography
-                sx={{
-                  color: colors.textSecondary,
-                  fontSize: typography.caption.size,
-                }}
-              >
-                {totalMembers} members
-              </Typography>
-            </Box>
           </Box>
-          <TextField
-            placeholder="Search members..."
-            size="small"
-            disabled={roleValidating}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon
-                    sx={{ color: roleValidating ? "#ccc" : "#bdbdbd" }}
-                  />
-                </InputAdornment>
-              ),
-              sx: {
-                borderRadius: 3,
-                bgcolor: "#fff",
-                width: { xs: 220, sm: 320 },
-                fontSize: 16,
-              },
-            }}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </Box>
-
-        {successMessage && (
-          <Alert severity="success" sx={{ mb: 2 }}>
-            {successMessage}
-          </Alert>
         )}
 
-        {error && (
-          <Alert
-            severity="error"
-            sx={{ mb: 2 }}
-            action={
-              error.includes("admin privileges") ? (
-                <Button
-                  color="inherit"
-                  size="small"
-                  onClick={() => window.location.reload()}
-                >
-                  Refresh Page
-                </Button>
-              ) : undefined
-            }
-          >
-            {error}
-          </Alert>
-        )}
-
-        <Paper elevation={0} sx={{ borderRadius: 3, p: { xs: 2, md: 3 } }}>
+        {/* Content */}
+        <Box
+          sx={{
+            flex: 1,
+            px: { xs: 2, sm: 3, md: spacing.pagePx },
+            py: { xs: 2, sm: 3, md: spacing.pagePy },
+            minWidth: 0,
+            overflow: 'auto',
+          }}
+        >
+          {/* Header (matches Dashboard) */}
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
-              gap: 2,
-              mb: 3,
-              flexWrap: "wrap",
+              justifyContent: "space-between",
+              mb: 2,
+              pt: { xs: 2, md: 3 },
+              fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
             }}
           >
-            <FormControl size="small" sx={{ minWidth: 140 }}>
-              <InputLabel id="status-filter-label">Status</InputLabel>
-              <Select
-                labelId="status-filter-label"
-                id="status-filter"
-                value={statusFilter}
-                label="Status"
-                disabled={roleValidating}
-                onChange={(e) => setStatusFilter(e.target.value as string)}
+            <Box>
+              <Typography
+                sx={{
+                  fontWeight: typography.title.weight,
+                  fontSize: { xs: typography.title.xs, md: typography.title.md },
+                  color: colors.textPrimary,
+                }}
               >
-                <MenuItem value="ALL">All</MenuItem>
-                <MenuItem value="ACTIVE">Active</MenuItem>
-                <MenuItem value="DEACTIVATED">Deactivated</MenuItem>
-                <MenuItem value="PENDING_VERIFY">Pending Verify</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl size="small" sx={{ minWidth: 140 }}>
-              <InputLabel id="role-filter-label">Role</InputLabel>
-              <Select
-                labelId="role-filter-label"
-                id="role-filter"
-                value={roleFilter}
-                label="Role"
-                disabled={roleValidating}
-                onChange={(e) => setRoleFilter(e.target.value as string)}
+                Workspace Members
+              </Typography>
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5 }}
               >
-                <MenuItem value="ALL">All</MenuItem>
-                <MenuItem value="ADMIN">Admin</MenuItem>
-                <MenuItem value="MEMBER">Member</MenuItem>
-              </Select>
-            </FormControl>
+                <Box
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    bgcolor: colors.primary,
+                    opacity: 0.7,
+                  }}
+                />
+                <Typography
+                  sx={{
+                    color: colors.textSecondary,
+                    fontSize: typography.caption.size,
+                  }}
+                >
+                  {totalMembers} members
+                </Typography>
+              </Box>
+            </Box>
+            <TextField
+              placeholder="Search members..."
+              size="small"
+              disabled={roleValidating}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon
+                      sx={{ color: roleValidating ? "#ccc" : "#bdbdbd" }}
+                    />
+                  </InputAdornment>
+                ),
+                sx: {
+                  borderRadius: 3,
+                  bgcolor: "#fff",
+                  width: { xs: 220, sm: 320 },
+                  fontSize: 16,
+                },
+              }}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </Box>
 
-          <TableContainer sx={{ width: "100%", overflowX: "auto" }}>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell padding="checkbox"></TableCell>
-                  <TableCell
-                    sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
-                  >
-                    Member ID
-                  </TableCell>
-                  <TableCell
-                    sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
-                  >
-                    Name
-                  </TableCell>
-                  <TableCell
-                    sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
-                  >
-                    Email
-                  </TableCell>
-                  <TableCell
-                    sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
-                  >
-                    Role
-                  </TableCell>
-                  <TableCell
-                    sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
-                  >
-                    Status
-                  </TableCell>
-                  <TableCell
-                    sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
-                  >
-                    Joined
-                  </TableCell>
-                  <TableCell align="right"></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {members.map((member, idx) => (
-                  <TableRow key={member.id}>
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={checked.includes(idx)}
-                        onChange={() => handleCheck(idx)}
-                        disabled={roleValidating}
-                        icon={<CheckBoxOutlineBlankIcon />}
-                        checkedIcon={<CheckBoxIcon sx={{ color: "#2950DA" }} />}
-                      />
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        fontWeight: 700,
-                        fontSize: { xs: 12, md: 16 },
-                        fontFamily: "monospace",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {member.id}
-                    </TableCell>
-                    <TableCell
-                      sx={{ fontWeight: 600, fontSize: { xs: 14, md: 16 } }}
-                    >
-                      {member.name}
-                    </TableCell>
-                    <TableCell
-                      sx={{ fontWeight: 600, fontSize: { xs: 14, md: 16 } }}
-                    >
-                      {member.email}
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={member.role}
-                        color={getRoleColor(member.role)}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={member.status}
-                        color={getStatusColor(member.status)}
-                        size="small"
-                        onClick={() => handleStatusClick(member)}
-                        disabled={roleValidating}
-                        sx={{
-                          cursor: roleValidating ? "not-allowed" : "pointer",
-                          "&:hover": {
-                            opacity: roleValidating ? 1 : 0.8,
-                            transform: roleValidating ? "none" : "scale(1.05)",
-                          },
-                        }}
-                      />
-                    </TableCell>
-                    <TableCell
-                      sx={{ fontWeight: 600, fontSize: { xs: 14, md: 16 } }}
-                    >
-                      {new Date(member.createdAt).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell align="right">
-                      <Tooltip title="View details">
-                        <IconButton
-                          onClick={() => handleViewDetails(member)}
-                          disabled={roleValidating}
-                        >
-                          <MoreVertIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          {successMessage && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {successMessage}
+            </Alert>
+          )}
 
-          {totalPages > 1 && (
+          {error && (
+            <Alert
+              severity="error"
+              sx={{ mb: 2 }}
+              action={
+                error.includes("admin privileges") ? (
+                  <Button
+                    color="inherit"
+                    size="small"
+                    onClick={() => window.location.reload()}
+                  >
+                    Refresh Page
+                  </Button>
+                ) : undefined
+              }
+            >
+              {error}
+            </Alert>
+          )}
+
+          <Paper elevation={0} sx={{ borderRadius: 3, p: { xs: 2, md: 3 } }}>
             <Box
               sx={{
                 display: "flex",
-                justifyContent: "center",
                 alignItems: "center",
-                mt: 3,
+                gap: 2,
+                mb: 3,
+                flexWrap: "wrap",
               }}
             >
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={handlePageChange}
-                color="primary"
-                shape="rounded"
-                size="large"
-                disabled={roleValidating}
-              />
-            </Box>
-          )}
-        </Paper>
-      </Box>
-
-      {/* Member Details Modal */}
-      <Dialog
-        open={detailsOpen}
-        onClose={handleCloseDetails}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Member Details</DialogTitle>
-        <DialogContent>
-          {memberDetails ? (
-            <Box>
-              <Typography>
-                <b>ID:</b> {memberDetails.id}
-              </Typography>
-              <Typography>
-                <b>Name:</b> {memberDetails.name}
-              </Typography>
-              <Typography>
-                <b>Email:</b> {memberDetails.email}
-              </Typography>
-              <Typography>
-                <b>Role:</b> {memberDetails.role}
-              </Typography>
-              <Typography>
-                <b>Status:</b> {memberDetails.status}
-              </Typography>
-              <Typography>
-                <b>Last Login:</b>{" "}
-                {memberDetails.lastLoginAt
-                  ? new Date(memberDetails.lastLoginAt).toLocaleString()
-                  : "Never"}
-              </Typography>
-              <Typography>
-                <b>Joined:</b>{" "}
-                {new Date(memberDetails.createdAt).toLocaleString()}
-              </Typography>
-
-              <Box sx={{ mt: 3, display: "flex", gap: 2, flexWrap: "wrap" }}>
-                {memberDetails.status !== "ACTIVE" && (
-                  <Button
-                    color="success"
-                    variant="contained"
-                    onClick={() => handleActivateMember(memberDetails.id)}
-                    disabled={actionLoading || roleValidating}
-                  >
-                    Activate Member
-                  </Button>
-                )}
-
-                {memberDetails.status === "ACTIVE" && (
-                  <Button
-                    color="error"
-                    variant="outlined"
-                    onClick={() => handleDeactivateMember(memberDetails.id)}
-                    disabled={
-                      actionLoading ||
-                      roleValidating ||
-                      memberDetails.role === "ADMIN"
-                    }
-                    title={
-                      memberDetails.role === "ADMIN"
-                        ? "Cannot deactivate an admin. Please change their role to Member first."
-                        : "Deactivate this member"
-                    }
-                  >
-                    Deactivate Member
-                  </Button>
-                )}
-
-                {memberDetails.role === "MEMBER" && (
-                  <Button
-                    color="primary"
-                    variant="outlined"
-                    onClick={() => handleChangeRole(memberDetails.id, "ADMIN")}
-                    disabled={actionLoading || roleValidating}
-                  >
-                    Make Admin
-                  </Button>
-                )}
-
-                {memberDetails.role === "ADMIN" && (
-                  <Button
-                    color="warning"
-                    variant="outlined"
-                    onClick={() => handleChangeRole(memberDetails.id, "MEMBER")}
-                    disabled={
-                      actionLoading ||
-                      roleValidating ||
-                      members.filter(
-                        (m) => m.role === "ADMIN" && m.status === "ACTIVE"
-                      ).length === 1
-                    }
-                    title={
-                      members.filter(
-                        (m) => m.role === "ADMIN" && m.status === "ACTIVE"
-                      ).length === 1
-                        ? "Cannot demote the only admin in the workspace"
-                        : "Change role to Member"
-                    }
-                  >
-                    Make Member
-                  </Button>
-                )}
-
-                <Button
-                  color="error"
-                  variant="outlined"
-                  onClick={() => handleRemoveMember(memberDetails.id)}
-                  disabled={
-                    actionLoading ||
-                    roleValidating ||
-                    (memberDetails.role === "ADMIN" &&
-                      members.filter(
-                        (m) => m.role === "ADMIN" && m.status === "ACTIVE"
-                      ).length === 1) ||
-                    memberDetails.id ===
-                    JSON.parse(localStorage.getItem("user") || "{}").id
-                  }
-                  title={
-                    memberDetails.role === "ADMIN" &&
-                      members.filter(
-                        (m) => m.role === "ADMIN" && m.status === "ACTIVE"
-                      ).length === 1
-                      ? "Cannot deactivate the only admin from the workspace"
-                      : memberDetails.id ===
-                        JSON.parse(localStorage.getItem("user") || "{}").id
-                        ? "Cannot deactivate yourself"
-                        : "Deactivate this member from the workspace (soft delete)"
-                  }
+              <FormControl size="small" sx={{ minWidth: 140 }}>
+                <InputLabel id="status-filter-label">Status</InputLabel>
+                <Select
+                  labelId="status-filter-label"
+                  id="status-filter"
+                  value={statusFilter}
+                  label="Status"
+                  disabled={roleValidating}
+                  onChange={(e) => setStatusFilter(e.target.value as string)}
                 >
-                  Deactivate
-                </Button>
+                  <MenuItem value="ALL">All</MenuItem>
+                  <MenuItem value="ACTIVE">Active</MenuItem>
+                  <MenuItem value="DEACTIVATED">Deactivated</MenuItem>
+                  <MenuItem value="PENDING_VERIFY">Pending Verify</MenuItem>
+                </Select>
+              </FormControl>
 
-                <Button
-                  color="error"
-                  variant="contained"
-                  onClick={() => handleDeleteMemberPermanent(memberDetails.id)}
-                  disabled={
-                    actionLoading ||
-                    roleValidating ||
-                    (memberDetails.role === "ADMIN" &&
-                      members.filter(
-                        (m) => m.role === "ADMIN" && m.status === "ACTIVE"
-                      ).length === 1) ||
-                    memberDetails.id ===
-                    JSON.parse(localStorage.getItem("user") || "{}").id
-                  }
-                  title={
-                    memberDetails.role === "ADMIN" &&
-                      members.filter(
-                        (m) => m.role === "ADMIN" && m.status === "ACTIVE"
-                      ).length === 1
-                      ? "Cannot permanently delete the only admin from the workspace"
-                      : memberDetails.id ===
-                        JSON.parse(localStorage.getItem("user") || "{}").id
-                        ? "Cannot permanently delete yourself"
-                        : "Permanently delete this member and all their data (hard delete)"
-                  }
+              <FormControl size="small" sx={{ minWidth: 140 }}>
+                <InputLabel id="role-filter-label">Role</InputLabel>
+                <Select
+                  labelId="role-filter-label"
+                  id="role-filter"
+                  value={roleFilter}
+                  label="Role"
+                  disabled={roleValidating}
+                  onChange={(e) => setRoleFilter(e.target.value as string)}
                 >
-                  Remove Permanently
-                </Button>
-              </Box>
-
-              {/* Show warning if this is the only admin */}
-              {memberDetails.role === "ADMIN" &&
-                members.filter(
-                  (m) => m.role === "ADMIN" && m.status === "ACTIVE"
-                ).length === 1 && (
-                  <Alert severity="warning" sx={{ mt: 2 }}>
-                    This is the only admin in the workspace. At least one admin
-                    must remain to manage the workspace.
-                  </Alert>
-                )}
-
-              {/* Show info about admin deactivation */}
-              {memberDetails.role === "ADMIN" &&
-                memberDetails.status === "ACTIVE" && (
-                  <Alert severity="info" sx={{ mt: 2 }}>
-                    Admins cannot be deactivated directly. Please change their
-                    role to Member first, then deactivate them.
-                  </Alert>
-                )}
-
-              {/* Show warning if this is the only admin for deactivation */}
-              {memberDetails.role === "ADMIN" &&
-                members.filter(
-                  (m) => m.role === "ADMIN" && m.status === "ACTIVE"
-                ).length === 1 && (
-                  <Alert severity="warning" sx={{ mt: 2 }}>
-                    This is the only admin in the workspace. At least one admin
-                    must remain to manage the workspace.
-                  </Alert>
-                )}
-
-              {/* Show info about permanent deletion */}
-              <Alert severity="info" sx={{ mt: 2 }}>
-                <strong>Deactivate:</strong> Temporarily removes the member
-                (soft delete). They can be reactivated later. <br />
-                <strong>Remove Permanently:</strong> Completely deletes the
-                member and all their data (hard delete). This action cannot be
-                undone.
-              </Alert>
-
-              {/* Show warning if trying to modify self */}
-              {memberDetails.id ===
-                JSON.parse(localStorage.getItem("user") || "{}").id && (
-                  <Alert severity="warning" sx={{ mt: 2 }}>
-                    <strong>Note:</strong> You cannot deactivate or permanently
-                    delete yourself. Ask another admin to perform these actions if
-                    needed.
-                  </Alert>
-                )}
+                  <MenuItem value="ALL">All</MenuItem>
+                  <MenuItem value="ADMIN">Admin</MenuItem>
+                  <MenuItem value="MEMBER">Member</MenuItem>
+                </Select>
+              </FormControl>
             </Box>
-          ) : (
-            <Typography>No details available.</Typography>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDetails}>Close</Button>
-        </DialogActions>
-      </Dialog>
 
-      {/* Status Change Dialog */}
-      <Dialog
-        open={statusDialogOpen}
-        onClose={handleCloseStatusDialog}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Change Member Status</DialogTitle>
-        <DialogContent>
-          {selectedMemberForStatus ? (
-            <Box>
-              <Typography sx={{ mb: 2 }}>
-                Change status for{" "}
-                <strong>{selectedMemberForStatus.name}</strong> (
-                {selectedMemberForStatus.email})
-              </Typography>
+            <TableContainer sx={{ width: "100%", overflowX: "auto" }}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell padding="checkbox"></TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
+                    >
+                      Member ID
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
+                    >
+                      Name
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
+                    >
+                      Email
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
+                    >
+                      Role
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
+                    >
+                      Status
+                    </TableCell>
+                    <TableCell
+                      sx={{ fontWeight: 800, fontSize: { xs: 14, md: 16 } }}
+                    >
+                      Joined
+                    </TableCell>
+                    <TableCell align="right"></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {members.map((member, idx) => (
+                    <TableRow key={member.id}>
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={checked.includes(idx)}
+                          onChange={() => handleCheck(idx)}
+                          disabled={roleValidating}
+                          icon={<CheckBoxOutlineBlankIcon />}
+                          checkedIcon={<CheckBoxIcon sx={{ color: "#2950DA" }} />}
+                        />
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          fontWeight: 700,
+                          fontSize: { xs: 12, md: 16 },
+                          fontFamily: "monospace",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {member.id}
+                      </TableCell>
+                      <TableCell
+                        sx={{ fontWeight: 600, fontSize: { xs: 14, md: 16 } }}
+                      >
+                        {member.name}
+                      </TableCell>
+                      <TableCell
+                        sx={{ fontWeight: 600, fontSize: { xs: 14, md: 16 } }}
+                      >
+                        {member.email}
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={member.role}
+                          color={getRoleColor(member.role)}
+                          size="small"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={member.status}
+                          color={getStatusColor(member.status)}
+                          size="small"
+                          onClick={() => handleStatusClick(member)}
+                          disabled={roleValidating}
+                          sx={{
+                            cursor: roleValidating ? "not-allowed" : "pointer",
+                            "&:hover": {
+                              opacity: roleValidating ? 1 : 0.8,
+                              transform: roleValidating ? "none" : "scale(1.05)",
+                            },
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell
+                        sx={{ fontWeight: 600, fontSize: { xs: 14, md: 16 } }}
+                      >
+                        {new Date(member.createdAt).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell align="right">
+                        <Tooltip title="View details">
+                          <IconButton
+                            onClick={() => handleViewDetails(member)}
+                            disabled={roleValidating}
+                          >
+                            <MoreVertIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
 
-              <Typography sx={{ mb: 2 }}>
-                Current status:{" "}
-                <Chip
-                  label={selectedMemberForStatus.status}
-                  color={getStatusColor(selectedMemberForStatus.status)}
-                  size="small"
+            {totalPages > 1 && (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  mt: 3,
+                }}
+              >
+                <Pagination
+                  count={totalPages}
+                  page={page}
+                  onChange={handlePageChange}
+                  color="primary"
+                  shape="rounded"
+                  size="large"
+                  disabled={roleValidating}
                 />
-              </Typography>
+              </Box>
+            )}
+          </Paper>
+        </Box>
 
-              <Typography sx={{ mb: 2, color: "text.secondary" }}>
-                Select new status:
-              </Typography>
+        {/* Member Details Modal */}
+        <Dialog
+          open={detailsOpen}
+          onClose={handleCloseDetails}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>Member Details</DialogTitle>
+          <DialogContent>
+            {memberDetails ? (
+              <Box>
+                <Typography>
+                  <b>ID:</b> {memberDetails.id}
+                </Typography>
+                <Typography>
+                  <b>Name:</b> {memberDetails.name}
+                </Typography>
+                <Typography>
+                  <b>Email:</b> {memberDetails.email}
+                </Typography>
+                <Typography>
+                  <b>Role:</b> {memberDetails.role}
+                </Typography>
+                <Typography>
+                  <b>Status:</b> {memberDetails.status}
+                </Typography>
+                <Typography>
+                  <b>Last Login:</b>{" "}
+                  {memberDetails.lastLoginAt
+                    ? new Date(memberDetails.lastLoginAt).toLocaleString()
+                    : "Never"}
+                </Typography>
+                <Typography>
+                  <b>Joined:</b>{" "}
+                  {new Date(memberDetails.createdAt).toLocaleString()}
+                </Typography>
 
-              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                {selectedMemberForStatus.status !== "ACTIVE" && (
-                  <Button
-                    color="success"
-                    variant="outlined"
-                    onClick={() => handleStatusChange("ACTIVE")}
-                    disabled={actionLoading || roleValidating}
-                  >
-                    Activate
-                  </Button>
-                )}
+                <Box sx={{ mt: 3, display: "flex", gap: 2, flexWrap: "wrap" }}>
+                  {memberDetails.status !== "ACTIVE" && (
+                    <Button
+                      color="success"
+                      variant="contained"
+                      onClick={() => handleActivateMember(memberDetails.id)}
+                      disabled={actionLoading || roleValidating}
+                    >
+                      Activate Member
+                    </Button>
+                  )}
 
-                {selectedMemberForStatus.status === "ACTIVE" && (
+                  {memberDetails.status === "ACTIVE" && (
+                    <Button
+                      color="error"
+                      variant="outlined"
+                      onClick={() => handleDeactivateMember(memberDetails.id)}
+                      disabled={
+                        actionLoading ||
+                        roleValidating ||
+                        memberDetails.role === "ADMIN"
+                      }
+                      title={
+                        memberDetails.role === "ADMIN"
+                          ? "Cannot deactivate an admin. Please change their role to Member first."
+                          : "Deactivate this member"
+                      }
+                    >
+                      Deactivate Member
+                    </Button>
+                  )}
+
+                  {memberDetails.role === "MEMBER" && (
+                    <Button
+                      color="primary"
+                      variant="outlined"
+                      onClick={() => handleChangeRole(memberDetails.id, "ADMIN")}
+                      disabled={actionLoading || roleValidating}
+                    >
+                      Make Admin
+                    </Button>
+                  )}
+
+                  {memberDetails.role === "ADMIN" && (
+                    <Button
+                      color="warning"
+                      variant="outlined"
+                      onClick={() => handleChangeRole(memberDetails.id, "MEMBER")}
+                      disabled={
+                        actionLoading ||
+                        roleValidating ||
+                        members.filter(
+                          (m) => m.role === "ADMIN" && m.status === "ACTIVE"
+                        ).length === 1
+                      }
+                      title={
+                        members.filter(
+                          (m) => m.role === "ADMIN" && m.status === "ACTIVE"
+                        ).length === 1
+                          ? "Cannot demote the only admin in the workspace"
+                          : "Change role to Member"
+                      }
+                    >
+                      Make Member
+                    </Button>
+                  )}
+
                   <Button
                     color="error"
                     variant="outlined"
-                    onClick={() => handleStatusChange("DEACTIVATED")}
+                    onClick={() => handleRemoveMember(memberDetails.id)}
                     disabled={
                       actionLoading ||
                       roleValidating ||
-                      selectedMemberForStatus.role === "ADMIN"
+                      (memberDetails.role === "ADMIN" &&
+                        members.filter(
+                          (m) => m.role === "ADMIN" && m.status === "ACTIVE"
+                        ).length === 1) ||
+                      memberDetails.id ===
+                      JSON.parse(localStorage.getItem("user") || "{}").id
                     }
                     title={
-                      selectedMemberForStatus.role === "ADMIN"
-                        ? "Cannot deactivate an admin. Please change their role to Member first."
-                        : "Deactivate this member"
+                      memberDetails.role === "ADMIN" &&
+                        members.filter(
+                          (m) => m.role === "ADMIN" && m.status === "ACTIVE"
+                        ).length === 1
+                        ? "Cannot deactivate the only admin from the workspace"
+                        : memberDetails.id ===
+                          JSON.parse(localStorage.getItem("user") || "{}").id
+                          ? "Cannot deactivate yourself"
+                          : "Deactivate this member from the workspace (soft delete)"
                     }
                   >
                     Deactivate
                   </Button>
-                )}
 
-                {selectedMemberForStatus.status !== "PENDING_VERIFY" && (
                   <Button
-                    color="warning"
-                    variant="outlined"
-                    onClick={() => handleStatusChange("PENDING_VERIFY")}
-                    disabled={actionLoading || roleValidating}
+                    color="error"
+                    variant="contained"
+                    onClick={() => handleDeleteMemberPermanent(memberDetails.id)}
+                    disabled={
+                      actionLoading ||
+                      roleValidating ||
+                      (memberDetails.role === "ADMIN" &&
+                        members.filter(
+                          (m) => m.role === "ADMIN" && m.status === "ACTIVE"
+                        ).length === 1) ||
+                      memberDetails.id ===
+                      JSON.parse(localStorage.getItem("user") || "{}").id
+                    }
+                    title={
+                      memberDetails.role === "ADMIN" &&
+                        members.filter(
+                          (m) => m.role === "ADMIN" && m.status === "ACTIVE"
+                        ).length === 1
+                        ? "Cannot permanently delete the only admin from the workspace"
+                        : memberDetails.id ===
+                          JSON.parse(localStorage.getItem("user") || "{}").id
+                          ? "Cannot permanently delete yourself"
+                          : "Permanently delete this member and all their data (hard delete)"
+                    }
                   >
-                    Set Pending Verify
+                    Remove Permanently
                   </Button>
-                )}
-              </Box>
+                </Box>
 
-              {/* Show warning if trying to deactivate admin */}
-              {selectedMemberForStatus.role === "ADMIN" &&
-                selectedMemberForStatus.status === "ACTIVE" && (
-                  <Alert severity="info" sx={{ mt: 2 }}>
-                    Admins cannot be deactivated directly. Please change their
-                    role to Member first, then deactivate them.
-                  </Alert>
-                )}
-            </Box>
-          ) : (
-            <Typography>No member selected.</Typography>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseStatusDialog}>Cancel</Button>
-        </DialogActions>
-      </Dialog>
+                {/* Show warning if this is the only admin */}
+                {memberDetails.role === "ADMIN" &&
+                  members.filter(
+                    (m) => m.role === "ADMIN" && m.status === "ACTIVE"
+                  ).length === 1 && (
+                    <Alert severity="warning" sx={{ mt: 2 }}>
+                      This is the only admin in the workspace. At least one admin
+                      must remain to manage the workspace.
+                    </Alert>
+                  )}
+
+                {/* Show info about admin deactivation */}
+                {memberDetails.role === "ADMIN" &&
+                  memberDetails.status === "ACTIVE" && (
+                    <Alert severity="info" sx={{ mt: 2 }}>
+                      Admins cannot be deactivated directly. Please change their
+                      role to Member first, then deactivate them.
+                    </Alert>
+                  )}
+
+                {/* Show warning if this is the only admin for deactivation */}
+                {memberDetails.role === "ADMIN" &&
+                  members.filter(
+                    (m) => m.role === "ADMIN" && m.status === "ACTIVE"
+                  ).length === 1 && (
+                    <Alert severity="warning" sx={{ mt: 2 }}>
+                      This is the only admin in the workspace. At least one admin
+                      must remain to manage the workspace.
+                    </Alert>
+                  )}
+
+                {/* Show info about permanent deletion */}
+                <Alert severity="info" sx={{ mt: 2 }}>
+                  <strong>Deactivate:</strong> Temporarily removes the member
+                  (soft delete). They can be reactivated later. <br />
+                  <strong>Remove Permanently:</strong> Completely deletes the
+                  member and all their data (hard delete). This action cannot be
+                  undone.
+                </Alert>
+
+                {/* Show warning if trying to modify self */}
+                {memberDetails.id ===
+                  JSON.parse(localStorage.getItem("user") || "{}").id && (
+                    <Alert severity="warning" sx={{ mt: 2 }}>
+                      <strong>Note:</strong> You cannot deactivate or permanently
+                      delete yourself. Ask another admin to perform these actions if
+                      needed.
+                    </Alert>
+                  )}
+              </Box>
+            ) : (
+              <Typography>No details available.</Typography>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDetails}>Close</Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Status Change Dialog */}
+        <Dialog
+          open={statusDialogOpen}
+          onClose={handleCloseStatusDialog}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>Change Member Status</DialogTitle>
+          <DialogContent>
+            {selectedMemberForStatus ? (
+              <Box>
+                <Typography sx={{ mb: 2 }}>
+                  Change status for{" "}
+                  <strong>{selectedMemberForStatus.name}</strong> (
+                  {selectedMemberForStatus.email})
+                </Typography>
+
+                <Typography sx={{ mb: 2 }}>
+                  Current status:{" "}
+                  <Chip
+                    label={selectedMemberForStatus.status}
+                    color={getStatusColor(selectedMemberForStatus.status)}
+                    size="small"
+                  />
+                </Typography>
+
+                <Typography sx={{ mb: 2, color: "text.secondary" }}>
+                  Select new status:
+                </Typography>
+
+                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                  {selectedMemberForStatus.status !== "ACTIVE" && (
+                    <Button
+                      color="success"
+                      variant="outlined"
+                      onClick={() => handleStatusChange("ACTIVE")}
+                      disabled={actionLoading || roleValidating}
+                    >
+                      Activate
+                    </Button>
+                  )}
+
+                  {selectedMemberForStatus.status === "ACTIVE" && (
+                    <Button
+                      color="error"
+                      variant="outlined"
+                      onClick={() => handleStatusChange("DEACTIVATED")}
+                      disabled={
+                        actionLoading ||
+                        roleValidating ||
+                        selectedMemberForStatus.role === "ADMIN"
+                      }
+                      title={
+                        selectedMemberForStatus.role === "ADMIN"
+                          ? "Cannot deactivate an admin. Please change their role to Member first."
+                          : "Deactivate this member"
+                      }
+                    >
+                      Deactivate
+                    </Button>
+                  )}
+
+                  {selectedMemberForStatus.status !== "PENDING_VERIFY" && (
+                    <Button
+                      color="warning"
+                      variant="outlined"
+                      onClick={() => handleStatusChange("PENDING_VERIFY")}
+                      disabled={actionLoading || roleValidating}
+                    >
+                      Set Pending Verify
+                    </Button>
+                  )}
+                </Box>
+
+                {/* Show warning if trying to deactivate admin */}
+                {selectedMemberForStatus.role === "ADMIN" &&
+                  selectedMemberForStatus.status === "ACTIVE" && (
+                    <Alert severity="info" sx={{ mt: 2 }}>
+                      Admins cannot be deactivated directly. Please change their
+                      role to Member first, then deactivate them.
+                    </Alert>
+                  )}
+              </Box>
+            ) : (
+              <Typography>No member selected.</Typography>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseStatusDialog}>Cancel</Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
     </Box>
   );
 };

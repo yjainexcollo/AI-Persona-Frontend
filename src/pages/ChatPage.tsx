@@ -209,7 +209,7 @@ export default function ChatPage() {
           })),
         }));
         setChatSessions(sessionsFallback);
-      } catch {}
+      } catch { }
     }
   }, []);
 
@@ -547,10 +547,10 @@ export default function ChatPage() {
         prev.map((msg) =>
           msg.id === messageId
             ? {
-                ...msg,
-                text: editingText.trim(),
-                edited: true,
-              }
+              ...msg,
+              text: editingText.trim(),
+              edited: true,
+            }
             : msg
         )
       );
@@ -789,8 +789,8 @@ export default function ChatPage() {
         currentConversationId && cuidRegex.test(currentConversationId)
           ? currentConversationId
           : conversationIdFromUrl && cuidRegex.test(conversationIdFromUrl)
-          ? conversationIdFromUrl
-          : undefined;
+            ? conversationIdFromUrl
+            : undefined;
 
       console.log("Using conversation ID:", validConversationId);
 
@@ -817,9 +817,9 @@ export default function ChatPage() {
         setCurrentConversation((prev) =>
           prev
             ? {
-                ...prev,
-                title: response.data.suggestedTitle || prev.title,
-              }
+              ...prev,
+              title: response.data.suggestedTitle || prev.title,
+            }
             : null
         );
 
@@ -1241,12 +1241,12 @@ export default function ChatPage() {
                         ))}
                       {allPersonas.filter((p) => p.id !== persona.id).length ===
                         0 && (
-                        <Typography
-                          sx={{ color: "#888", textAlign: "center", mt: 2 }}
-                        >
-                          No other personas available.
-                        </Typography>
-                      )}
+                          <Typography
+                            sx={{ color: "#888", textAlign: "center", mt: 2 }}
+                          >
+                            No other personas available.
+                          </Typography>
+                        )}
                     </DialogContent>
                     <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
                       <Button
@@ -1410,7 +1410,7 @@ export default function ChatPage() {
                                   }}
                                 >
                                   {msg.fileType &&
-                                  msg.fileType.startsWith("image/") ? (
+                                    msg.fileType.startsWith("image/") ? (
                                     <img
                                       src={msg.fileUrl}
                                       alt="attachment"
@@ -1500,7 +1500,7 @@ export default function ChatPage() {
                                     }}
                                   >
                                     {copiedMessageId ===
-                                    (msg.id || `msg-${idx}`) ? (
+                                      (msg.id || `msg-${idx}`) ? (
                                       <CheckIcon
                                         fontSize="small"
                                         sx={{ color: "#10B981" }}
@@ -1635,7 +1635,7 @@ export default function ChatPage() {
                           {msg.fileUrl &&
                             !msg.fileUrls &&
                             (msg.fileType &&
-                            msg.fileType.startsWith("image/") ? (
+                              msg.fileType.startsWith("image/") ? (
                               <img
                                 src={msg.fileUrl}
                                 alt="attachment"
@@ -1881,29 +1881,50 @@ export default function ChatPage() {
             {/* Suggestion Chips - Hide after user sends first message */}
             {/* Removed suggestion chips rendering from ChatPage */}
 
-            {/* Chat InputBar with file upload support */}
-            <ChatInputBar
-              value={messageInput}
-              onChange={setMessageInput}
-              onSend={handleSendMessage}
-              disabled={
-                isLoading ||
-                !!currentConversation?.archivedAt ||
-                isRestoringConversation
-              }
-              persona={persona}
-              conversationId={currentConversationId}
-              sidebarOpen={sidebarOpen}
-              sidebarWidth={SIDEBAR_WIDTH}
-              maxWidth={960}
-              suggestions={suggestionChips}
-              showSuggestions={!hasUserMessages && !isInConversationRestoration}
-            />
+            {/* Chat InputBar with file upload support - Sticky on mobile */}
+            <Box
+              sx={{
+                position: 'sticky',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                bgcolor: 'background.paper',
+                borderTop: '1px solid',
+                borderColor: 'divider',
+                px: { xs: 0, sm: 0 },
+                py: { xs: 1, sm: 1.5 },
+                pb: {
+                  xs: 'calc(8px + env(safe-area-inset-bottom))',
+                  sm: 1.5,
+                },
+                zIndex: 10,
+                width: '100%',
+                maxWidth: '100vw',
+              }}
+            >
+              <ChatInputBar
+                value={messageInput}
+                onChange={setMessageInput}
+                onSend={handleSendMessage}
+                disabled={
+                  isLoading ||
+                  !!currentConversation?.archivedAt ||
+                  isRestoringConversation
+                }
+                persona={persona}
+                conversationId={currentConversationId}
+                sidebarOpen={sidebarOpen}
+                sidebarWidth={SIDEBAR_WIDTH}
+                maxWidth={960}
+                suggestions={suggestionChips}
+                showSuggestions={!hasUserMessages && !isInConversationRestoration}
+              />
+            </Box>
           </Box>
         </Box>
       </Box>
 
-      {/* Conversation Settings Dialog */}
+      {/* Conversation Settings Dialog - Fullscreen on mobile */}
       <ConversationSettingsDialog
         open={settingsDialogOpen}
         onClose={handleCloseSettings}

@@ -2,6 +2,13 @@
 
 * {
   box-sizing: border-box;
+  /* Prevent text overflow in flex containers */
+  min-width: 0;
+}
+
+html {
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -12,7 +19,24 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #ffffff;
-  overflow-x: hidden; /* Prevent horizontal scroll */
+  max-width: 100%;
+  overflow-x: hidden;
+  /* Prevent horizontal scroll */
+}
+
+/* Prevent zoom on input focus for iOS */
+input,
+textarea,
+select {
+  font-size: 16px !important;
+}
+
+/* Allow long text to break */
+p,
+span,
+div {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Skip link (visible on focus) */
@@ -27,6 +51,7 @@ body {
   z-index: 9999;
   text-decoration: none;
 }
+
 .skip-link:focus {
   top: 12px;
   outline: 2px solid #fff;
@@ -35,6 +60,20 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+/* Responsive code blocks - scroll inside block, not page */
+pre {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+pre code {
+  display: block;
+  white-space: pre;
+  word-wrap: normal;
+  overflow-wrap: normal;
 }
 
 /* Ensure consistent scrollbar styles */
@@ -127,6 +166,7 @@ code {
 
 /* Touch-friendly button sizes for mobile */
 @media (max-width: 767px) {
+
   button,
   .MuiButton-root {
     min-height: 44px !important;

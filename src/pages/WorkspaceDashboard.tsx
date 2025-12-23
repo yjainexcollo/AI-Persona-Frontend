@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Button, Paper, Avatar, Drawer } from "@mui/material";
+import { Box, Typography, Button, Paper, Avatar, Drawer, IconButton, useTheme, useMediaQuery } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import AdminSidebar from "../components/sidebar/AdminSidebar";
 import { fetchWithAuth } from "../utils/session";
 import {
@@ -26,6 +27,10 @@ const WorkspaceDashboard: React.FC<WorkspaceDashboardProps> = ({
   onUsePersona,
   onSignOut,
 }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmallMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const [dynamicStats, setDynamicStats] = useState({
     members: stats?.members ?? "0",
     users: stats?.users ?? "0",
@@ -164,6 +169,7 @@ const WorkspaceDashboard: React.FC<WorkspaceDashboardProps> = ({
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f8f9fa" }}>
+      {/* Desktop Sidebar */}
       <Box sx={{ display: { xs: "none", md: "block" } }}>
         <AdminSidebar
           userRole={dynamicUser.role}
@@ -173,10 +179,12 @@ const WorkspaceDashboard: React.FC<WorkspaceDashboardProps> = ({
           avatarUrl={getAvatarUrl(dynamicUser.avatarUrl)}
         />
       </Box>
+
+      {/* Mobile Drawer */}
       <Drawer
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-        PaperProps={{ sx: { width: 240 } }}
+        PaperProps={{ sx: { width: { xs: '86vw', sm: 280 } } }}
       >
         <AdminSidebar
           userRole={dynamicUser.role}
@@ -187,6 +195,7 @@ const WorkspaceDashboard: React.FC<WorkspaceDashboardProps> = ({
           avatarUrl={getAvatarUrl(dynamicUser.avatarUrl)}
         />
       </Drawer>
+
       {/* Main Content */}
       <Box
         sx={{
@@ -194,8 +203,35 @@ const WorkspaceDashboard: React.FC<WorkspaceDashboardProps> = ({
           display: "flex",
           flexDirection: "column",
           ml: { xs: 0, md: "220px" },
+          width: { xs: '100%', md: 'auto' },
+          maxWidth: '100vw',
+          overflow: 'hidden',
         }}
       >
+        {/* Mobile Header with Hamburger */}
+        {isMobile && (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              p: 2,
+              borderBottom: '1px solid #e0e0e0',
+              bgcolor: '#fff',
+            }}
+          >
+            <IconButton
+              onClick={() => setSidebarOpen(true)}
+              sx={{ mr: 2, minWidth: 44, minHeight: 44 }}
+              aria-label="Open menu"
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              Dashboard
+            </Typography>
+          </Box>
+        )}
+
         {/* Welcome Section */}
         <Box
           sx={{
@@ -204,111 +240,181 @@ const WorkspaceDashboard: React.FC<WorkspaceDashboardProps> = ({
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
+            px: { xs: 2, sm: 3, md: 4 },
+            py: { xs: 3, sm: 4, md: 5 },
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+          {/* Welcome Title */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1, width: '100%', justifyContent: 'center' }}>
             <Typography
               variant="h3"
-              sx={{ fontWeight: 800, color: "#111", textAlign: "center" }}
+              sx={{
+                fontWeight: 800,
+                color: "#111",
+                textAlign: "center",
+                fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' },
+                wordBreak: 'break-word',
+              }}
             >
               {`Welcome to ${dynamicWorkspaceName}`}
             </Typography>
           </Box>
+
+          {/* Subtitle */}
           <Typography
             sx={{
               color: "#6b7280",
               fontWeight: 500,
-              fontSize: 18,
-              mb: 4,
+              fontSize: { xs: 14, sm: 16, md: 18 },
+              mb: { xs: 3, sm: 4 },
               textAlign: "center",
+              maxWidth: '600px',
             }}
           >
             Bring your team in and start deploying AI personas.
           </Typography>
+
+          {/* User Avatar */}
           <Avatar
             src={getAvatarUrl(dynamicUser.avatarUrl)}
             alt={dynamicUser.name}
-            sx={{ width: 80, height: 80, mb: 1.5 }}
+            sx={{
+              width: { xs: 64, sm: 80 },
+              height: { xs: 64, sm: 80 },
+              mb: 1.5
+            }}
           />
+
+          {/* User Name */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 0 }}>
-            <Typography sx={{ fontWeight: 700, fontSize: 20, color: "#222" }}>
+            <Typography sx={{
+              fontWeight: 700,
+              fontSize: { xs: 18, sm: 20 },
+              color: "#222",
+              textAlign: 'center',
+            }}>
               {dynamicUser.name}
             </Typography>
           </Box>
+
+          {/* User Role */}
           <Typography
-            sx={{ color: "#6b7280", fontWeight: 500, fontSize: 16, mb: 3 }}
+            sx={{
+              color: "#6b7280",
+              fontWeight: 500,
+              fontSize: { xs: 14, sm: 16 },
+              mb: { xs: 2, sm: 3 },
+              textAlign: 'center',
+            }}
           >
             {dynamicUser.role}
           </Typography>
-          <Box sx={{ display: "flex", gap: 2, mb: 5 }}>
+
+          {/* Use Persona Button */}
+          <Box sx={{ display: "flex", gap: 2, mb: { xs: 3, sm: 5 } }}>
             <Button
               variant="outlined"
               sx={{
                 color: "#222",
                 fontWeight: 700,
-                px: 4,
+                px: { xs: 3, sm: 4 },
+                py: { xs: 1, sm: 1.5 },
                 textTransform: "none",
                 borderRadius: 2,
                 bgcolor: "#F5F7FA",
                 borderColor: "#e0e0e0",
+                fontSize: { xs: 14, sm: 16 },
+                minWidth: { xs: 140, sm: 160 },
+                minHeight: 44,
               }}
               onClick={onUsePersona}
             >
               Use Persona
             </Button>
           </Box>
-          {/* Quick Stats */}
-          <Box sx={{ display: "flex", gap: 3, mt: 2 }}>
+
+          {/* Quick Stats - Responsive Grid */}
+          <Box sx={{
+            display: "flex",
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 2, sm: 3 },
+            mt: 2,
+            width: '100%',
+            maxWidth: { xs: '100%', sm: '500px' },
+          }}>
+            {/* Members Card */}
             <Paper
               sx={{
-                p: 3,
-                minWidth: 180,
+                p: { xs: 2, sm: 3 },
+                flex: 1,
+                minWidth: { xs: '100%', sm: 0 },
                 borderRadius: 3,
                 bgcolor: "#F5F7FA",
                 position: "relative",
               }}
             >
               <Typography
-                sx={{ color: "#6b7280", fontWeight: 500, fontSize: 15, mb: 1 }}
+                sx={{
+                  color: "#6b7280",
+                  fontWeight: 500,
+                  fontSize: { xs: 14, sm: 15 },
+                  mb: 1
+                }}
               >
                 Members
               </Typography>
-              <Typography sx={{ fontWeight: 800, fontSize: 24, color: "#111" }}>
+              <Typography sx={{
+                fontWeight: 800,
+                fontSize: { xs: 20, sm: 24 },
+                color: "#111"
+              }}>
                 {loadingStats ? "..." : dynamicStats.members}
               </Typography>
               <Typography
                 sx={{
                   color: "#9ca3af",
                   fontWeight: 400,
-                  fontSize: 12,
+                  fontSize: { xs: 11, sm: 12 },
                   mt: 0.5,
                 }}
               >
                 MEMBER users only
               </Typography>
             </Paper>
+
+            {/* Total Users Card */}
             <Paper
               sx={{
-                p: 3,
-                minWidth: 180,
+                p: { xs: 2, sm: 3 },
+                flex: 1,
+                minWidth: { xs: '100%', sm: 0 },
                 borderRadius: 3,
                 bgcolor: "#F5F7FA",
                 position: "relative",
               }}
             >
               <Typography
-                sx={{ color: "#6b7280", fontWeight: 500, fontSize: 15, mb: 1 }}
+                sx={{
+                  color: "#6b7280",
+                  fontWeight: 500,
+                  fontSize: { xs: 14, sm: 15 },
+                  mb: 1
+                }}
               >
                 Total Users
               </Typography>
-              <Typography sx={{ fontWeight: 800, fontSize: 24, color: "#111" }}>
+              <Typography sx={{
+                fontWeight: 800,
+                fontSize: { xs: 20, sm: 24 },
+                color: "#111"
+              }}>
                 {loadingStats ? "..." : dynamicStats.users}
               </Typography>
               <Typography
                 sx={{
                   color: "#9ca3af",
                   fontWeight: 400,
-                  fontSize: 12,
+                  fontSize: { xs: 11, sm: 12 },
                   mt: 0.5,
                 }}
               >
