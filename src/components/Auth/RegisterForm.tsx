@@ -10,8 +10,6 @@ import {
   FormControlLabel,
   Link,
   Alert,
-  useTheme,
-  useMediaQuery,
 } from "@mui/material";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
@@ -20,15 +18,13 @@ import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import TermsAndConditionsDialog from "./TermsAndConditionsDialog";
 import { useNavigate } from "react-router-dom";
 import { env } from "../../lib/config/env";
+import AuthLayout from "./AuthLayout";
 
 interface RegisterFormProps {
   inviteToken?: string;
 }
 
 const RegisterForm: React.FC<RegisterFormProps> = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
   const [showPassword, setShowPassword] = useState(false);
   const [termsOpen, setTermsOpen] = useState(false);
   const [agreed, setAgreed] = useState(false);
@@ -208,380 +204,297 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
 
   return (
     <>
-      <Box
-        sx={{
-          display: "flex",
-          minHeight: "100vh",
-          bgcolor: "#fff",
-          justifyContent: "center",
-          alignItems: "center",
-          px: { xs: 2, sm: 3, md: 4 },
-          py: { xs: 2, sm: 3 },
-          pt: { xs: 5, sm: 5 },
-        }}
-      >
-        {/* Form Container */}
-        <Box
-          sx={{
-            width: "100%",
-            maxWidth: { xs: "100%", sm: 440, md: 480 },
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
+      <AuthLayout>
+        <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
+          <Typography
+            variant="h4"
             sx={{
-              width: "100%",
-              maxWidth: { xs: "100%", sm: 380, md: 420 },
+              fontWeight: 800,
+              mb: 1,
+              color: "#1f2937",
+              textAlign: "center",
+              fontSize: { xs: "24px", sm: "28px" },
             }}
           >
-            <Typography
-              variant="h4"
-              sx={{
-                fontWeight: 800,
-                mb: { xs: 1.5, sm: 2, md: 2.5 },
-                color: "#222",
-                textAlign: "center",
-                fontSize: { xs: "22px", sm: "24px", md: "28px" },
-                lineHeight: 1.25,
-              }}
-            >
-              Create Account
-            </Typography>
-            <Typography
-              sx={{
-                color: "#6b7280",
-                fontWeight: 500,
-                fontSize: { xs: 13, sm: 14, md: 16 },
-                mb: { xs: 2, sm: 2.5, md: 3 },
-                textAlign: "center",
-                lineHeight: 1.4,
-                px: { xs: 1, sm: 0 },
-              }}
-            >
-              Fill your information below or register with your crudo account
-            </Typography>
+            Create Account
+          </Typography>
+          <Typography
+            sx={{
+              color: "#6b7280",
+              fontSize: { xs: 14, sm: 15 },
+              mb: 3,
+              textAlign: "center",
+            }}
+          >
+            Fill your information below or register with your account
+          </Typography>
 
-            {error && (
-              <Alert
-                severity="error"
+          {error && (
+            <Alert severity="error" sx={{ mb: 2, fontSize: 14 }}>
+              {error}
+            </Alert>
+          )}
+
+          {/* Full Name Field */}
+          <Typography
+            sx={{
+              fontWeight: 600,
+              fontSize: 14,
+              mb: 0.75,
+              color: "#374151",
+            }}
+          >
+            Full Name
+          </Typography>
+          <TextField
+            fullWidth
+            name="name"
+            placeholder="Enter your full name"
+            variant="outlined"
+            value={formData.name}
+            onChange={handleChange}
+            required
+            sx={{ mb: 2 }}
+          />
+
+          {/* Email Field */}
+          <Typography
+            sx={{
+              fontWeight: 600,
+              fontSize: 14,
+              mb: 0.75,
+              color: "#374151",
+            }}
+          >
+            Email
+          </Typography>
+          <TextField
+            fullWidth
+            name="email"
+            type="email"
+            placeholder="Enter your email"
+            variant="outlined"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            sx={{ mb: 2 }}
+          />
+
+          {/* Password Field */}
+          <Typography
+            sx={{
+              fontWeight: 600,
+              fontSize: 14,
+              mb: 0.75,
+              color: "#374151",
+            }}
+          >
+            Password
+          </Typography>
+          <Box ref={passwordFieldRef} sx={{ position: "relative" }}>
+            <TextField
+              fullWidth
+              name="password"
+              placeholder="Enter your password"
+              variant="outlined"
+              type={showPassword ? "text" : "password"}
+              value={formData.password}
+              onChange={handleChange}
+              onFocus={() => setPasswordFocused(true)}
+              required
+              sx={{ mb: 1 }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword((v) => !v)}
+                      edge="end"
+                      tabIndex={-1}
+                    >
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+            {/* Password Checklist */}
+            {passwordFocused && formData.password && (
+              <Box
+                ref={checklistRef}
                 sx={{
-                  mb: { xs: 2, sm: 2.5 },
-                  fontSize: { xs: 14, sm: 16 },
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  right: 0,
+                  zIndex: 10,
+                  mt: 1,
+                  p: 2,
+                  bgcolor: "#f8f9fa",
+                  borderRadius: "10px",
+                  border: "1px solid #e5e7eb",
+                  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                 }}
               >
-                {error}
-              </Alert>
-            )}
-
-            {/* Full Name Field */}
-            <Typography
-              sx={{
-                fontWeight: 700,
-                fontSize: { xs: 13, sm: 14, md: 16 },
-                mb: { xs: 0.75, sm: 1.25 },
-                color: "#222",
-              }}
-            >
-              Full Name
-            </Typography>
-            <TextField
-              fullWidth
-              name="name"
-              placeholder="Your name"
-              variant="outlined"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              sx={{
-                mb: { xs: 1.75, sm: 2.25 },
-                borderRadius: 2,
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 2,
-                  fontSize: { xs: 13, sm: 14 },
-                  height: { xs: 44, sm: 52 },
-                },
-              }}
-            />
-
-            {/* Email Field */}
-            <Typography
-              sx={{
-                fontWeight: 700,
-                fontSize: { xs: 13, sm: 14, md: 16 },
-                mb: { xs: 0.75, sm: 1.25 },
-                color: "#222",
-              }}
-            >
-              Email
-            </Typography>
-            <TextField
-              fullWidth
-              name="email"
-              type="email"
-              placeholder="Your email"
-              variant="outlined"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              sx={{
-                mb: { xs: 1.75, sm: 2.25 },
-                borderRadius: 2,
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: 2,
-                  fontSize: { xs: 13, sm: 14 },
-                  height: { xs: 44, sm: 52 },
-                },
-              }}
-            />
-
-            {/* Password Field */}
-            <Typography
-              sx={{
-                fontWeight: 700,
-                fontSize: { xs: 13, sm: 14, md: 16 },
-                mb: { xs: 0.75, sm: 1.25 },
-                color: "#222",
-              }}
-            >
-              Password
-            </Typography>
-            <Box ref={passwordFieldRef} sx={{ position: "relative" }}>
-              <TextField
-                fullWidth
-                name="password"
-                placeholder="Your password"
-                variant="outlined"
-                type={showPassword ? "text" : "password"}
-                value={formData.password}
-                onChange={handleChange}
-                onFocus={() => setPasswordFocused(true)}
-                required
-                sx={{
-                  mb: 1,
-                  borderRadius: 2,
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: 2,
-                    fontSize: { xs: 13, sm: 14 },
-                    height: { xs: 44, sm: 52 },
-                  },
-                }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword((v) => !v)}
-                        edge="end"
-                        size={isMobile ? "small" : "medium"}
-                      >
-                        {showPassword ? <Visibility /> : <VisibilityOff />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-
-              {/* Password Checklist */}
-              {passwordFocused && formData.password && (
-                <Box
-                  ref={checklistRef}
-                  sx={{
-                    position: "absolute",
-                    top: "100%",
-                    left: 0,
-                    right: 0,
-                    zIndex: 10,
-                    mt: 1,
-                    p: { xs: 1.5, sm: 2 },
-                    bgcolor: "#f8f9fa",
-                    borderRadius: 2,
-                    border: "1px solid #e9ecef",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                    maxWidth: { xs: "100%", sm: "none" },
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontWeight: 600,
-                      fontSize: { xs: 12, sm: 13 },
-                      mb: { xs: 0.75, sm: 1 },
-                      color: "#222",
-                    }}
-                  >
-                    Password requirements:
-                  </Typography>
-                  {passwordRules.map((rule, index) => (
-                    <Box
-                      key={index}
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        mb: { xs: 0.5, sm: 0.75 },
-                        gap: 1,
-                      }}
-                    >
-                      {rule.test(formData.password) ? (
-                        <CheckCircleIcon
-                          sx={{
-                            color: "#2950DA",
-                            fontSize: { xs: 16, sm: 18 },
-                            flexShrink: 0,
-                          }}
-                        />
-                      ) : (
-                        <RadioButtonUncheckedIcon
-                          sx={{
-                            color: "#d1d5db",
-                            fontSize: { xs: 16, sm: 18 },
-                            flexShrink: 0,
-                          }}
-                        />
-                      )}
-                      <Typography
-                        sx={{
-                          fontSize: { xs: 12, sm: 13 },
-                          color: rule.test(formData.password)
-                            ? "#2950DA"
-                            : "#6b7280",
-                          fontWeight: rule.test(formData.password) ? 600 : 400,
-                          lineHeight: 1.3,
-                        }}
-                      >
-                        {rule.label}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Box>
-              )}
-            </Box>
-
-            {/* Terms and Conditions */}
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={agreed}
-                  onClick={handleCheckboxClick}
-                  onChange={handleCheckboxClick}
-                  sx={{
-                    p: { xs: 0.5, sm: 0.75 },
-                    mr: 0.0,
-                    alignSelf: "flex-start",
-                    mt: -0.6,
-                    ml: 0.5,
-                    "& .MuiSvgIcon-root": {
-                      fontSize: { xs: 18, sm: 20 },
-                    },
-                  }}
-                />
-              }
-              label={
                 <Typography
                   sx={{
-                    fontSize: { xs: 13, sm: 14, md: 15 },
-                    color: "#222",
-                    fontWeight: 400,
-                    lineHeight: 1.4,
+                    fontWeight: 600,
+                    fontSize: 13,
+                    mb: 1,
+                    color: "#374151",
                   }}
                 >
-                  I agree with{" "}
-                  <Link
-                    href="#"
-                    underline="always"
-                    sx={{
-                      color: "#3269b8",
-                      fontWeight: 500,
-                      cursor: "pointer",
-                    }}
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    Privacy Policy and Terms and Conditions
-                  </Link>
+                  Password requirements:
                 </Typography>
-              }
-              sx={{
-                mb: { xs: 2.5, sm: 3, md: 3.5 },
-                alignItems: "flex-start",
-                ".MuiFormControlLabel-label": {
-                  mt: 0,
-                },
-              }}
-            />
+                {passwordRules.map((rule, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      mb: 0.75,
+                      gap: 1,
+                    }}
+                  >
+                    {rule.test(formData.password) ? (
+                      <CheckCircleIcon
+                        sx={{
+                          color: "#3b82f6",
+                          fontSize: 18,
+                          flexShrink: 0,
+                        }}
+                      />
+                    ) : (
+                      <RadioButtonUncheckedIcon
+                        sx={{
+                          color: "#d1d5db",
+                          fontSize: 18,
+                          flexShrink: 0,
+                        }}
+                      />
+                    )}
+                    <Typography
+                      sx={{
+                        fontSize: 13,
+                        color: rule.test(formData.password)
+                          ? "#3b82f6"
+                          : "#6b7280",
+                        fontWeight: rule.test(formData.password) ? 600 : 400,
+                      }}
+                    >
+                      {rule.label}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            )}
+          </Box>
 
-            {/* Sign Up Button */}
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              disabled={!isFormValid || loading}
-              sx={{
-                bgcolor: isFormValid ? "#2950DA" : "#e5e7eb",
-                color: isFormValid ? "#fff" : "#9ca3af",
-                fontWeight: 700,
-                fontSize: { xs: 15, sm: 16, md: 18 },
-                borderRadius: 2,
-                py: { xs: 1.25, sm: 1.5, md: 1.75 },
-                mb: { xs: 2, sm: 2.5, md: 3 },
-                boxShadow: isFormValid
-                  ? "0 4px 12px rgba(41, 80, 218, 0.3)"
-                  : "none",
-                textTransform: "none",
-                height: { xs: 44, sm: 52, md: 56 },
-                transition: "all 0.2s ease-in-out",
-                "&:hover": {
-                  bgcolor: isFormValid ? "#1e40af" : "#e5e7eb",
-                  boxShadow: isFormValid
-                    ? "0 6px 20px rgba(41, 80, 218, 0.4)"
-                    : "none",
-                  transform: isFormValid ? "translateY(-1px)" : "none",
-                },
-                "&:disabled": {
-                  bgcolor: "#e5e7eb",
-                  color: "#9ca3af",
-                  opacity: 0.6,
-                  cursor: "not-allowed",
-                  transform: "none",
-                },
-              }}
-            >
-              {loading ? "Signing up..." : "Sign up"}
-            </Button>
-
-            {/* Login Link */}
-            <Typography
-              sx={{
-                color: "#8a8a8a",
-                fontSize: { xs: 13, sm: 14, md: 16 },
-                fontWeight: 400,
-                textAlign: "center",
-                lineHeight: 1.4,
-              }}
-            >
-              Already have an account?{" "}
-              <Link
-                href="#"
-                underline="none"
+          {/* Terms and Conditions */}
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={agreed}
+                onClick={handleCheckboxClick}
+                onChange={handleCheckboxClick}
                 sx={{
-                  color: "#2950DA",
-                  fontWeight: 700,
-                  fontSize: { xs: 13, sm: 14, md: 16 },
-                  cursor: "pointer",
-                  "&:hover": {
-                    color: "#1e40af",
-                    textDecoration: "underline",
+                  p: 0.5,
+                  mr: 0.5,
+                  mt: -0.5, // Align with first line of text
+                  "& .MuiSvgIcon-root": {
+                    fontSize: 20,
                   },
                 }}
-                onClick={() => navigate("/login")}
+              />
+            }
+            label={
+              <Typography
+                sx={{
+                  fontSize: 14,
+                  color: "#374151",
+                  fontWeight: 400,
+                }}
               >
-                Log in
-              </Link>
-            </Typography>
-          </Box>
+                I agree with{" "}
+                <Link
+                  href="#"
+                  underline="always"
+                  sx={{
+                    color: "#3b82f6",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                  }}
+                  onClick={(e) => e.preventDefault()}
+                >
+                  Privacy Policy and Terms and Conditions
+                </Link>
+              </Typography>
+            }
+            sx={{
+              mb: 3,
+              alignItems: "flex-start",
+            }}
+          />
+
+          {/* Sign Up Button */}
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            disabled={!isFormValid || loading}
+            sx={{
+              bgcolor: isFormValid ? "#3b82f6" : "#e5e7eb",
+              color: isFormValid ? "#fff" : "#9ca3af",
+              fontWeight: 700,
+              fontSize: 16,
+              borderRadius: "10px",
+              height: 48,
+              mb: 3,
+              textTransform: "none",
+              boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+              "&:hover": {
+                bgcolor: isFormValid ? "#2563eb" : "#e5e7eb",
+                boxShadow: isFormValid
+                  ? "0 4px 6px -1px rgba(0, 0, 0, 0.1)"
+                  : "none",
+              },
+              "&:disabled": {
+                bgcolor: "#e5e7eb",
+                color: "#9ca3af",
+                cursor: "not-allowed",
+              },
+            }}
+          >
+            {loading ? "Signing up..." : "Sign up"}
+          </Button>
+
+          {/* Login Link */}
+          <Typography
+            sx={{
+              textAlign: "center",
+              color: "#6b7280",
+              fontSize: 14,
+            }}
+          >
+            Already have an account?{" "}
+            <Link
+              component="button"
+              type="button"
+              onClick={() => navigate("/login")}
+              sx={{
+                color: "#3b82f6",
+                fontWeight: 700,
+                textDecoration: "none",
+                "&:hover": {
+                  textDecoration: "underline",
+                },
+              }}
+            >
+              Log in
+            </Link>
+          </Typography>
         </Box>
-      </Box>
+      </AuthLayout>
 
       <TermsAndConditionsDialog
         open={termsOpen}

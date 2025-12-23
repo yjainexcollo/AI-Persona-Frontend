@@ -24,7 +24,7 @@ export async function logout(): Promise<void> {
     if (accessToken) {
       // Call backend logout endpoint with access token in Authorization header
       const response = await fetchWithAuth(
-        `${env.backendUrl}/api/auth/logout`,
+        `${env.BACKEND_URL}/api/auth/logout`,
         {
           method: "POST",
           headers: {
@@ -80,7 +80,7 @@ export function getCurrentUser(): any {
  */
 export async function refreshCurrentUser(): Promise<any> {
   try {
-    const response = await fetchWithAuth(`${env.backendUrl}/api/users/me`);
+    const response = await fetchWithAuth(`${env.BACKEND_URL}/api/users/me`);
 
     if (!response.ok) {
       throw new Error("Failed to refresh user data");
@@ -108,7 +108,7 @@ export async function refreshCurrentUser(): Promise<any> {
 export async function verifyEmail(token: string): Promise<any> {
   try {
     const response = await fetch(
-      `${env.backendUrl}/api/auth/verify-email?token=${token}`,
+      `${env.BACKEND_URL}/api/auth/verify-email?token=${token}`,
       {
         method: "GET",
         headers: {

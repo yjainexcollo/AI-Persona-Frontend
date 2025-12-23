@@ -77,7 +77,7 @@ const ActiveUsersPage: React.FC = () => {
   const [totalMembers, setTotalMembers] = useState(0);
   // Show only ACTIVE members by default so deactivated users disappear after removal
   const [statusFilter, setStatusFilter] = useState<string>("ACTIVE");
-  const [roleFilter, setRoleFilter] = useState<string>("");
+  const [roleFilter, setRoleFilter] = useState<string>("ALL");
   const [actionLoading, setActionLoading] = useState(false);
   const [roleValidating, setRoleValidating] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -125,8 +125,8 @@ const ActiveUsersPage: React.FC = () => {
     try {
       const response = await getWorkspaceMembers(wsId, {
         search: search || undefined,
-        status: statusFilter || undefined,
-        role: roleFilter || undefined,
+        status: statusFilter === "ALL" ? undefined : statusFilter,
+        role: roleFilter === "ALL" ? undefined : roleFilter,
         page: currentPage,
         limit,
       });
@@ -699,18 +699,16 @@ const ActiveUsersPage: React.FC = () => {
             }}
           >
             <FormControl size="small" sx={{ minWidth: 140 }}>
-              <InputLabel>Status</InputLabel>
+              <InputLabel id="status-filter-label">Status</InputLabel>
               <Select
+                labelId="status-filter-label"
+                id="status-filter"
                 value={statusFilter}
                 label="Status"
                 disabled={roleValidating}
-                onChange={(e) =>
-                  setStatusFilter(
-                    (e.target.value || "").toString().toUpperCase()
-                  )
-                }
+                onChange={(e) => setStatusFilter(e.target.value as string)}
               >
-                <MenuItem value="">All</MenuItem>
+                <MenuItem value="ALL">All</MenuItem>
                 <MenuItem value="ACTIVE">Active</MenuItem>
                 <MenuItem value="DEACTIVATED">Deactivated</MenuItem>
                 <MenuItem value="PENDING_VERIFY">Pending Verify</MenuItem>
@@ -718,16 +716,16 @@ const ActiveUsersPage: React.FC = () => {
             </FormControl>
 
             <FormControl size="small" sx={{ minWidth: 140 }}>
-              <InputLabel>Role</InputLabel>
+              <InputLabel id="role-filter-label">Role</InputLabel>
               <Select
+                labelId="role-filter-label"
+                id="role-filter"
                 value={roleFilter}
                 label="Role"
                 disabled={roleValidating}
-                onChange={(e) =>
-                  setRoleFilter((e.target.value || "").toString().toUpperCase())
-                }
+                onChange={(e) => setRoleFilter(e.target.value as string)}
               >
-                <MenuItem value="">All</MenuItem>
+                <MenuItem value="ALL">All</MenuItem>
                 <MenuItem value="ADMIN">Admin</MenuItem>
                 <MenuItem value="MEMBER">Member</MenuItem>
               </Select>
@@ -987,18 +985,18 @@ const ActiveUsersPage: React.FC = () => {
                         (m) => m.role === "ADMIN" && m.status === "ACTIVE"
                       ).length === 1) ||
                     memberDetails.id ===
-                      JSON.parse(localStorage.getItem("user") || "{}").id
+                    JSON.parse(localStorage.getItem("user") || "{}").id
                   }
                   title={
                     memberDetails.role === "ADMIN" &&
-                    members.filter(
-                      (m) => m.role === "ADMIN" && m.status === "ACTIVE"
-                    ).length === 1
+                      members.filter(
+                        (m) => m.role === "ADMIN" && m.status === "ACTIVE"
+                      ).length === 1
                       ? "Cannot deactivate the only admin from the workspace"
                       : memberDetails.id ===
                         JSON.parse(localStorage.getItem("user") || "{}").id
-                      ? "Cannot deactivate yourself"
-                      : "Deactivate this member from the workspace (soft delete)"
+                        ? "Cannot deactivate yourself"
+                        : "Deactivate this member from the workspace (soft delete)"
                   }
                 >
                   Deactivate
@@ -1016,18 +1014,18 @@ const ActiveUsersPage: React.FC = () => {
                         (m) => m.role === "ADMIN" && m.status === "ACTIVE"
                       ).length === 1) ||
                     memberDetails.id ===
-                      JSON.parse(localStorage.getItem("user") || "{}").id
+                    JSON.parse(localStorage.getItem("user") || "{}").id
                   }
                   title={
                     memberDetails.role === "ADMIN" &&
-                    members.filter(
-                      (m) => m.role === "ADMIN" && m.status === "ACTIVE"
-                    ).length === 1
+                      members.filter(
+                        (m) => m.role === "ADMIN" && m.status === "ACTIVE"
+                      ).length === 1
                       ? "Cannot permanently delete the only admin from the workspace"
                       : memberDetails.id ===
                         JSON.parse(localStorage.getItem("user") || "{}").id
-                      ? "Cannot permanently delete yourself"
-                      : "Permanently delete this member and all their data (hard delete)"
+                        ? "Cannot permanently delete yourself"
+                        : "Permanently delete this member and all their data (hard delete)"
                   }
                 >
                   Remove Permanently
@@ -1077,12 +1075,12 @@ const ActiveUsersPage: React.FC = () => {
               {/* Show warning if trying to modify self */}
               {memberDetails.id ===
                 JSON.parse(localStorage.getItem("user") || "{}").id && (
-                <Alert severity="warning" sx={{ mt: 2 }}>
-                  <strong>Note:</strong> You cannot deactivate or permanently
-                  delete yourself. Ask another admin to perform these actions if
-                  needed.
-                </Alert>
-              )}
+                  <Alert severity="warning" sx={{ mt: 2 }}>
+                    <strong>Note:</strong> You cannot deactivate or permanently
+                    delete yourself. Ask another admin to perform these actions if
+                    needed.
+                  </Alert>
+                )}
             </Box>
           ) : (
             <Typography>No details available.</Typography>

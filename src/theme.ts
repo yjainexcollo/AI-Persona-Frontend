@@ -17,20 +17,13 @@ declare module "@mui/material/styles" {
   }
 }
 
-const prefersDark =
-  typeof window !== "undefined" &&
-  window.matchMedia &&
-  window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-const mode: "light" | "dark" =
-  (localStorage.getItem("themeMode") as "light" | "dark") ||
-  (prefersDark ? "dark" : "light");
-
+// Design tokens
 const tokens = {
   primary: { main: "#2950DA", light: "#E8ECF2", dark: "#526794" },
   secondary: { main: "#526794" },
 } as const;
 
+// Base theme configuration (typography, components, etc.)
 const base = {
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -101,7 +94,14 @@ const base = {
   },
 } as const;
 
-const light = createTheme({
+/**
+ * Universal Light Theme
+ * 
+ * This theme is enforced globally across the entire application.
+ * Dark mode switching has been intentionally removed to maintain
+ * a consistent UI experience regardless of system preferences.
+ */
+const theme = createTheme({
   palette: {
     mode: "light",
     primary: tokens.primary,
@@ -112,15 +112,4 @@ const light = createTheme({
   ...base,
 });
 
-const dark = createTheme({
-  palette: {
-    mode: "dark",
-    primary: tokens.primary,
-    secondary: tokens.secondary,
-    background: { default: "#0b0e14", paper: "#0f131a" },
-    surface: { 0: "#0f131a", 50: "#141924", 100: "#1a2130" },
-  },
-  ...base,
-});
-
-export default mode === "dark" ? dark : light;
+export default theme;

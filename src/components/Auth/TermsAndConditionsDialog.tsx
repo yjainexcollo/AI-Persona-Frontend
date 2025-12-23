@@ -10,8 +10,10 @@ import {
   Checkbox,
   FormControlLabel,
   Button,
+  ThemeProvider,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import authTheme from "../../authTheme";
 
 interface TermsAndConditionsDialogProps {
   open: boolean;
@@ -84,147 +86,161 @@ const TermsAndConditionsDialog: React.FC<TermsAndConditionsDialogProps> = ({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      maxWidth="sm"
-      fullWidth
-      PaperProps={{ sx: { borderRadius: 3, p: 0, bgcolor: "#fff" } }}
-    >
-      <DialogTitle
-        sx={{
-          fontWeight: 800,
-          fontSize: 28,
-          color: "#222",
-          pb: 1.5,
-          pt: 3,
-          px: 4,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    <ThemeProvider theme={authTheme}>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            p: 0,
+            bgcolor: "background.paper",
+          },
         }}
       >
-        Terms and Conditions
-        <IconButton onClick={handleClose} sx={{ color: "#222" }}>
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
-      <Divider sx={{ mb: 0 }} />
-      <DialogContent sx={{ px: 4, pt: 3, pb: 1 }}>
-        {termsSections.map((section) => (
-          <React.Fragment key={section.title}>
-            <Typography
-              sx={{
-                color: "#222",
-                fontSize: 14,
-                fontWeight: 700,
-                mb: 0.75,
-                lineHeight: 1.4,
-                textAlign: "left",
-                fontFamily:
-                  '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-              }}
-            >
-              {section.title}
-            </Typography>
-            <Typography
-              sx={{
-                color: "#222",
-                fontSize: 14,
-                fontWeight: 400,
-                mb: 2,
-                whiteSpace: "pre-line",
-                lineHeight: 1.55,
-                textAlign: "left",
-                hyphens: "auto",
-                wordBreak: "break-word",
-                fontFamily:
-                  '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-              }}
-            >
-              {section.body}
-            </Typography>
-          </React.Fragment>
-        ))}
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={checked}
-              onChange={(e) => setChecked(e.target.checked)}
-              sx={{ p: 0.5, ml: 0.5, mt: -0.3 }}
-            />
-          }
-          label={
-            <Typography
-              sx={{
-                fontSize: 16,
-                color: "#222",
-                fontWeight: 400,
-                fontFamily:
-                  '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-              }}
-            >
-              I have read and agree to these Terms and Conditions
-            </Typography>
-          }
+        <DialogTitle
           sx={{
-            alignItems: "flex-start",
-            ".MuiFormControlLabel-label": { mt: 0.2 },
-          }}
-        />
-      </DialogContent>
-      <Divider />
-      <DialogActions
-        sx={{
-          px: 4,
-          py: 3,
-          bgcolor: "#f9f9f9",
-          borderBottomLeftRadius: 12,
-          borderBottomRightRadius: 12,
-        }}
-      >
-        <Button
-          variant="contained"
-          disabled={!checked}
-          onClick={handleClose}
-          sx={{
-            bgcolor: "#e0e0e0",
-            color: "#bdbdbd",
-            fontWeight: 700,
-            fontSize: 18,
-            borderRadius: 2,
+            fontWeight: 800,
+            fontSize: 28,
+            color: "text.primary",
+            pb: 1.5,
+            pt: 3,
             px: 4,
-            py: 1.2,
-            boxShadow: "none",
-            textTransform: "none",
-            mr: 2,
-            "&:hover": { bgcolor: "#e0e0e0" },
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          disabled={!checked}
-          onClick={handleAgree}
+          Terms and Conditions
+          <IconButton onClick={handleClose} sx={{ color: "text.primary" }}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <Divider sx={{ mb: 0 }} />
+        <DialogContent sx={{ px: 4, pt: 3, pb: 1 }}>
+          {termsSections.map((section) => (
+            <React.Fragment key={section.title}>
+              <Typography
+                sx={{
+                  color: "text.primary",
+                  fontSize: 14,
+                  fontWeight: 700,
+                  mb: 0.75,
+                  lineHeight: 1.4,
+                  textAlign: "left",
+                }}
+              >
+                {section.title}
+              </Typography>
+              <Typography
+                sx={{
+                  color: "text.primary",
+                  fontSize: 14,
+                  fontWeight: 400,
+                  mb: 2,
+                  whiteSpace: "pre-line",
+                  lineHeight: 1.55,
+                  textAlign: "left",
+                  hyphens: "auto",
+                  wordBreak: "break-word",
+                }}
+              >
+                {section.body}
+              </Typography>
+            </React.Fragment>
+          ))}
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={checked}
+                onChange={(e) => setChecked(e.target.checked)}
+                sx={{
+                  p: 0.5,
+                  ml: 0.5,
+                  mt: -0.5,
+                  color: "text.secondary",
+                  "&.Mui-checked": {
+                    color: "primary.main",
+                  },
+                }}
+              />
+            }
+            label={
+              <Typography
+                sx={{
+                  fontSize: 16,
+                  color: "text.primary",
+                  fontWeight: 400,
+                }}
+              >
+                I have read and agree to these Terms and Conditions
+              </Typography>
+            }
+            sx={{
+              alignItems: "flex-start",
+            }}
+          />
+        </DialogContent>
+        <Divider />
+        <DialogActions
           sx={{
-            bgcolor: checked ? "#526794" : "#e0e0e0",
-            color: checked ? "#fff" : "#bdbdbd",
-            fontWeight: 700,
-            fontSize: 18,
-            borderRadius: 2,
             px: 4,
-            py: 1.2,
-            boxShadow: "none",
-            textTransform: "none",
-            "&:hover": { bgcolor: checked ? "#526794" : "#e0e0e0" },
+            py: 3,
+            bgcolor: "#f9f9f9",
+            borderBottomLeftRadius: 12,
+            borderBottomRightRadius: 12,
           }}
         >
-          Agree
-        </Button>
-      </DialogActions>
-    </Dialog>
+          <Button
+            variant="outlined"
+            onClick={handleClose}
+            sx={{
+              color: "text.secondary",
+              borderColor: "divider",
+              fontWeight: 600,
+              fontSize: 16,
+              borderRadius: "10px",
+              px: 3,
+              py: 1,
+              textTransform: "none",
+              mr: 2,
+              "&:hover": {
+                borderColor: "text.secondary",
+                bgcolor: "rgba(0, 0, 0, 0.04)",
+              },
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            disabled={!checked}
+            onClick={handleAgree}
+            sx={{
+              bgcolor: checked ? "primary.main" : "#e5e7eb",
+              color: checked ? "#fff" : "#9ca3af",
+              fontWeight: 700,
+              fontSize: 16,
+              borderRadius: "10px",
+              px: 3,
+              py: 1,
+              textTransform: "none",
+              "&:hover": {
+                bgcolor: checked ? "primary.dark" : "#e5e7eb",
+              },
+              "&:disabled": {
+                bgcolor: "#e5e7eb",
+                color: "#9ca3af",
+              },
+            }}
+          >
+            Agree
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </ThemeProvider>
   );
 };
 
