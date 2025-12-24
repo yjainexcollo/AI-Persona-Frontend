@@ -224,7 +224,8 @@ const PersonaCard: React.FC<PersonaCardProps> = ({
             sx={{
               display: "inline-flex",
               alignItems: "flex-end",
-              justifyContent: { xs: "center", sm: "flex-start" },
+              justifyContent: "center",
+              width: "100%",
               gap: 0.5,
               cursor: "pointer",
               transition: "color 0.2s ease-in-out",

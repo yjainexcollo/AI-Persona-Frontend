@@ -9,6 +9,8 @@ import {
   Paper,
   Breadcrumbs,
   CircularProgress,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
@@ -130,67 +132,72 @@ const EditProfilePage: React.FC = () => {
     fileInputRef.current?.click();
   };
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f7f8fa" }}>
-      {/* Sidebar */}
-      <Box
-        sx={{
-          width: 120,
-          bgcolor: "#fff",
-          borderRight: "1px solid #f0f0f0",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          py: 3,
-          position: "relative",
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{ fontWeight: 900, color: "#b97a7a", mb: 6 }}
+      {/* Sidebar - Hidden on mobile */}
+      {!isMobile && (
+        <Box
+          sx={{
+            width: 120,
+            bgcolor: "#fff",
+            borderRight: "1px solid #f0f0f0",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            py: 3,
+            position: "relative",
+          }}
         >
-          LOGO
-        </Typography>
-        <Box sx={{ flex: 1, width: "100%" }}>
-          {sidebarItems.map((item) => (
-            <Box
-              key={item.label}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                mb: 4,
-                cursor: "pointer",
-              }}
-            >
-              {item.icon}
-              <Typography
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: 900, color: "#b97a7a", mb: 6 }}
+          >
+            LOGO
+          </Typography>
+          <Box sx={{ flex: 1, width: "100%" }}>
+            {sidebarItems.map((item) => (
+              <Box
+                key={item.label}
                 sx={{
-                  fontWeight: 600,
-                  fontSize: 15,
-                  color: item.active ? "#2950DA" : "#444",
-                  mt: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  mb: 4,
+                  cursor: "pointer",
                 }}
               >
-                {item.label}
-              </Typography>
-            </Box>
-          ))}
+                {item.icon}
+                <Typography
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: 15,
+                    color: item.active ? "#2950DA" : "#444",
+                    mt: 1,
+                  }}
+                >
+                  {item.label}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+          <Avatar
+            src="https://randomuser.me/api/portraits/women/44.jpg"
+            sx={{
+              width: 48,
+              height: 48,
+              position: "absolute",
+              bottom: 24,
+              left: "50%",
+              transform: "translateX(-50%)",
+            }}
+          />
         </Box>
-        <Avatar
-          src="https://randomuser.me/api/portraits/women/44.jpg"
-          sx={{
-            width: 48,
-            height: 48,
-            position: "absolute",
-            bottom: 24,
-            left: "50%",
-            transform: "translateX(-50%)",
-          }}
-        />
-      </Box>
+      )}
       {/* Main Content */}
-      <Box sx={{ flex: 1, px: 6, py: 4 }}>
+      <Box sx={{ flex: 1, px: { xs: 2, sm: 4, md: 6 }, py: { xs: 2, sm: 3, md: 4 }, maxWidth: '100vw', overflow: 'hidden' }}>
         {/* Breadcrumb and Header */}
         <Box
           sx={{
@@ -198,33 +205,37 @@ const EditProfilePage: React.FC = () => {
             alignItems: "center",
             justifyContent: "space-between",
             mb: 2,
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 2, sm: 0 },
           }}
         >
           <Breadcrumbs separator={"›"} aria-label="breadcrumb">
-            <Typography sx={{ color: "#888", fontWeight: 600, fontSize: 22 }}>
+            <Typography sx={{ color: "#888", fontWeight: 600, fontSize: { xs: 18, sm: 22 } }}>
               Profile
             </Typography>
-            <Typography sx={{ color: "#222", fontWeight: 800, fontSize: 26 }}>
+            <Typography sx={{ color: "#222", fontWeight: 800, fontSize: { xs: 20, sm: 26 } }}>
               Edit Profile
             </Typography>
           </Breadcrumbs>
-          <TextField
-            placeholder="Search"
-            size="small"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: "#bdbdbd" }} />
-                </InputAdornment>
-              ),
-              sx: {
-                borderRadius: 3,
-                bgcolor: "#fff",
-                width: 220,
-                fontSize: 16,
-              },
-            }}
-          />
+          {!isMobile && (
+            <TextField
+              placeholder="Search"
+              size="small"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: "#bdbdbd" }} />
+                  </InputAdornment>
+                ),
+                sx: {
+                  borderRadius: 3,
+                  bgcolor: "#fff",
+                  width: 220,
+                  fontSize: 16,
+                },
+              }}
+            />
+          )}
         </Box>
         {/* Profile Card */}
         <Paper
@@ -397,8 +408,8 @@ const EditProfilePage: React.FC = () => {
               Save Changes
             </Button>
           </Box>
-          <Box sx={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-            <Box sx={{ flex: 1, minWidth: 220 }}>
+          <Box sx={{ display: "flex", flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 2, sm: 4 }, flexWrap: "wrap" }}>
+            <Box sx={{ flex: { xs: '1 1 100%', sm: 1 }, minWidth: { xs: '100%', sm: 220 } }}>
               <Typography
                 sx={{ fontWeight: 700, fontSize: 18, color: "#888", mb: 2 }}
               >

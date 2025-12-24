@@ -361,7 +361,7 @@ const Header: React.FC = () => {
         onClose={() => setMobileMenuOpen(false)}
         sx={{
           "& .MuiDrawer-paper": {
-            width: 280,
+            width: { xs: '86vw', sm: 280 },
             boxSizing: "border-box",
             backgroundColor: "#fff",
           },

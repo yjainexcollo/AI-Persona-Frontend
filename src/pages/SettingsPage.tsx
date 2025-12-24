@@ -18,6 +18,9 @@ import {
   Grid,
   Alert,
   CircularProgress,
+  useTheme,
+  useMediaQuery,
+  IconButton,
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
@@ -99,6 +102,8 @@ const locales = [
 ];
 
 const SettingsPage: React.FC = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const [activeSection, setActiveSection] = useState<
     "account" | "notifications" | "privacy" | "workspace"
@@ -306,7 +311,7 @@ const SettingsPage: React.FC = () => {
       <Drawer
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-        PaperProps={{ sx: { width: 240 } }}
+        PaperProps={{ sx: { width: { xs: '86vw', sm: 280 } } }}
       >
         <AdminSidebar
           userRole={user.role}
@@ -323,39 +328,71 @@ const SettingsPage: React.FC = () => {
           flexDirection: "column",
           minHeight: "100vh",
           bgcolor: "#f8f9fa",
-          px: spacing.pagePx,
-          py: spacing.pagePy,
+          px: { xs: 2, sm: 3, md: spacing.pagePx },
+          py: { xs: 2, sm: 3, md: spacing.pagePy },
+          width: { xs: '100%', md: 'auto' },
+          maxWidth: '100vw',
+          overflow: 'hidden',
         }}
       >
-        {/* Top Bar with CommonNavbar */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            p: 2,
-            bgcolor: "#fff",
-            boxShadow: "0 2px 8px 0 rgba(44,62,80,0.04)",
-          }}
-        >
-          <Typography
-            variant="h5"
+        {/* Mobile Header */}
+        {isMobile && (
+          <Box
             sx={{
-              fontWeight: typography.title.weight,
-              color: colors.textPrimary,
-              fontSize: { xs: typography.title.xs, md: typography.title.md },
+              display: 'flex',
+              alignItems: 'center',
+              p: 2,
+              mb: 2,
+              bgcolor: '#fff',
+              borderRadius: 2,
+              boxShadow: '0 2px 8px 0 rgba(44,62,80,0.04)',
             }}
           >
-            Settings
-          </Typography>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => setSidebarOpen(true)}
+            <IconButton
+              onClick={() => setSidebarOpen(true)}
+              sx={{ mr: 2, minWidth: 44, minHeight: 44 }}
+              aria-label="Open menu"
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 600,
+                color: colors.textPrimary,
+              }}
+            >
+              Settings
+            </Typography>
+          </Box>
+        )}
+
+        {/* Desktop Header */}
+        {!isMobile && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              p: 2,
+              mb: 2,
+              bgcolor: "#fff",
+              borderRadius: 2,
+              boxShadow: "0 2px 8px 0 rgba(44,62,80,0.04)",
+            }}
           >
-            <MenuIcon />
-          </Button>
-        </Box>
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: typography.title.weight,
+                color: colors.textPrimary,
+                fontSize: typography.title.md,
+              }}
+            >
+              Settings
+            </Typography>
+          </Box>
+        )}
         {/* Settings Sidebar */}
         <Box
           sx={{
@@ -366,6 +403,30 @@ const SettingsPage: React.FC = () => {
             bgcolor: "#f8f9fa",
           }}
         >
+          {/* Mobile Section Selector */}
+          {isMobile && (
+            <Box sx={{ mb: 2, px: 2, position: 'relative', zIndex: 10 }}>
+              <FormControl fullWidth>
+                <InputLabel id="section-select-label">Section</InputLabel>
+                <Select
+                  labelId="section-select-label"
+                  id="section-select"
+                  value={activeSection}
+                  label="Section"
+                  onChange={(e) => setActiveSection(e.target.value as any)}
+                  sx={{ bgcolor: '#fff' }}
+                >
+                  {settingsSidebar.map((item) => (
+                    <MenuItem key={item.key} value={item.key}>
+                      {item.title}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+          )}
+
+          {/* Desktop Sidebar */}
           <Box
             sx={{
               width: { xs: "100%", md: 320 },
@@ -402,10 +463,10 @@ const SettingsPage: React.FC = () => {
                 onClick={() =>
                   setActiveSection(
                     item.key as
-                      | "account"
-                      | "notifications"
-                      | "privacy"
-                      | "workspace"
+                    | "account"
+                    | "notifications"
+                    | "privacy"
+                    | "workspace"
                   )
                 }
               >
@@ -441,7 +502,7 @@ const SettingsPage: React.FC = () => {
           <Box
             sx={{
               flex: 1,
-              p: 0,
+              p: { xs: 2, md: 4 },
               bgcolor: "#f7f8fa",
               display: "flex",
               flexDirection: "column",
@@ -660,12 +721,12 @@ const SettingsPage: React.FC = () => {
                     {editField === "name"
                       ? "Legal name"
                       : editField === "email"
-                      ? "Email address"
-                      : editField === "address"
-                      ? "Address"
-                      : editField === "phone"
-                      ? "Phone number"
-                      : "Government ID"}
+                        ? "Email address"
+                        : editField === "address"
+                          ? "Address"
+                          : editField === "phone"
+                            ? "Phone number"
+                            : "Government ID"}
                   </DialogTitle>
                   <DialogContent>
                     <TextField
@@ -675,12 +736,12 @@ const SettingsPage: React.FC = () => {
                         editField === "name"
                           ? "Legal name"
                           : editField === "email"
-                          ? "Email address"
-                          : editField === "address"
-                          ? "Address"
-                          : editField === "phone"
-                          ? "Phone number"
-                          : "Government ID"
+                            ? "Email address"
+                            : editField === "address"
+                              ? "Address"
+                              : editField === "phone"
+                                ? "Phone number"
+                                : "Government ID"
                       }
                       type="text"
                       fullWidth

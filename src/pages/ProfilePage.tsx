@@ -19,9 +19,11 @@ import {
   Divider,
   IconButton,
   Drawer,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import EditIcon from "@mui/icons-material/Edit";
-import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
@@ -36,6 +38,9 @@ import { getAvatarUrl } from "../services/avatarService";
 import { env } from "../lib/config/env";
 
 const ProfilePage: React.FC = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
   interface UserProfile {
     id?: string;
     name?: string;
@@ -254,7 +259,7 @@ const ProfilePage: React.FC = () => {
       <Drawer
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-        PaperProps={{ sx: { width: 240 } }}
+        PaperProps={{ sx: { width: { xs: '86vw', sm: 280 } } }}
       >
         <AdminSidebar
           userRole={user.role}
@@ -270,19 +275,43 @@ const ProfilePage: React.FC = () => {
           display: "flex",
           flexDirection: "column",
           ml: { xs: 0, md: "220px" },
+          width: { xs: '100%', md: 'auto' },
+          maxWidth: '100vw',
+          overflow: 'hidden',
         }}
       >
         {/* Content */}
-        <Box sx={{ flex: 1, px: spacing.pagePx, py: spacing.pagePy }}>
-          {/* Header */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              mb: 2,
-            }}
-          >
+        <Box sx={{ flex: 1, px: { xs: 2, sm: 3, md: spacing.pagePx }, py: { xs: 2, sm: 3, md: spacing.pagePy } }}>
+          {/* Mobile Header */}
+          {isMobile && (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                mb: 3,
+              }}
+            >
+              <IconButton
+                onClick={() => setSidebarOpen(true)}
+                sx={{ mr: 2, minWidth: 44, minHeight: 44 }}
+                aria-label="Open menu"
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 600,
+                  color: colors.textPrimary,
+                }}
+              >
+                Profile
+              </Typography>
+            </Box>
+          )}
+
+          {/* Desktop Header */}
+          {!isMobile && (
             <Box>
               <Typography
                 sx={{
@@ -318,7 +347,7 @@ const ProfilePage: React.FC = () => {
                 </Typography>
               </Box>
             </Box>
-          </Box>
+          )}
           {loading ? (
             <Box
               sx={{
